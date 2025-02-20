@@ -12,4 +12,7 @@ class NXPROJECT_API ANXZombieCharacter : public ANXCharacterBase
 	
 public:
 	ANXZombieCharacter();
+
+	virtual void BeginPlay() override;
+
 };
