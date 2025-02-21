@@ -17,7 +17,7 @@ void ANXGrenadeWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	// FuseTime 후에 폭발
-	FuseTime = 3.0f; // 3초 후에 폭발
+	FuseTime = 7.0f; // 7초 후에 폭발
 
 	FTimerHandle TimerHandle; //타이머를 관리하기 위한 핸들
 	GetWorld()->GetTimerManager().SetTimer(
