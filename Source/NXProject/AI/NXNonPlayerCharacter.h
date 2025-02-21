@@ -14,4 +14,9 @@ class NXPROJECT_API ANXNonPlayerCharacter : public ANXCharacterBase
 {
 	GENERATED_BODY()
 	
+public:
+	ANXNonPlayerCharacter();
+	UPROPERTY()
+	float WalkSpeed;
+	float RunSpeed;
 };
