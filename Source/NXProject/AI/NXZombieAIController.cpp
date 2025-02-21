@@ -87,8 +87,8 @@ void ANXZombieAIController::EndAI()
 	}
 }
 
-/**
-패트롤 타이머가 만료되었을 때 실행되는 함수
+
+/*
 void ANXZombieAIController::OnPatrolTimerElapsed()
 {
 	// AI가 조종하는 Pawn 가져오기
