@@ -20,6 +20,9 @@ public class NXProject : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
-		PublicIncludePaths.AddRange(new string[]{"NXProject"});
+		PublicIncludePaths.AddRange(new string[]
+		{
+			"NXProject"
+		});
 	}
 }
