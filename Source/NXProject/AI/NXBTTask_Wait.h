@@ -7,11 +7,15 @@
 #include "NXBTTask_Wait.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class NXPROJECT_API UNXBTTask_Wait : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
+public:
+	UNXBTTask_Wait();
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };
