@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "AI/NXNonPlayerCharacter.h"
 #include "AI/NXAIController.h"
@@ -10,7 +8,7 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 	AIControllerClass = ANXAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	WalkSpeed = 100.f;
+	WalkSpeed = 80.f;
 	RunSpeed = 300.f;
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
