@@ -34,8 +34,7 @@ public:
 	static const float PatrolRepeatInterval;
 
 	static const float PatrolRadius;
-	
-	*/ 
+	*/
 
 public:
 	static const float PatrolRadius;
