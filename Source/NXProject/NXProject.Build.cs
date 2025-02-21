@@ -12,7 +12,10 @@ public class NXProject : ModuleRules
 		{
 			// Initial Dependencies
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-		});
+
+			//AI
+			"AIModule","NavigationSystem","GameplayTasks"
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		
