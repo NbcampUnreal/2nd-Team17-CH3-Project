@@ -1,11 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "AI/NXBTTask_RandomMove.h"
 #include "AI/NXAIController.h"
 #include "AI/NXNonPlayerCharacter.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UNXBTTask_RandomMove::UNXBTTask_RandomMove()
 {
@@ -16,6 +15,8 @@ EBTNodeResult::Type UNXBTTask_RandomMove::ExecuteTask(UBehaviorTreeComponent& Ow
 {
     if (APawn* ControlledPawn = OwnerComp.GetAIOwner()->GetPawn())
     {
+        ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(ControlledPawn);
+        NPC->GetCharacterMovement()->MaxWalkSpeed = NPC->WalkSpeed;
         UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(ControlledPawn);
 
         if (NavSystem)
@@ -49,7 +50,6 @@ EBTNodeResult::Type UNXBTTask_RandomMove::ExecuteTask(UBehaviorTreeComponent& Ow
         }
 
     }
-
 
     return EBTNodeResult::Failed;
 }

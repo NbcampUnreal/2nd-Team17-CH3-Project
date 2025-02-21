@@ -9,7 +9,6 @@ UNXBTTask_Wait::UNXBTTask_Wait()
 	NodeName = TEXT("Wait");
 }
 
-
 EBTNodeResult::Type UNXBTTask_Wait::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	CurrentOwnerComp = &OwnerComp;

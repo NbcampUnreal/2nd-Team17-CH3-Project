@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -14,4 +13,12 @@ class NXPROJECT_API UNXBTTask_FollowPlayer : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
+public:
+	UNXBTTask_FollowPlayer();
+
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+	FBlackboardKeySelector TargetActorKey;
 };
