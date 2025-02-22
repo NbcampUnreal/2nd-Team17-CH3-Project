@@ -135,23 +135,6 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void ANXPlayerCharacter::Move(const FInputActionValue& Value)
 {
-	//if (!Controller) return;
-
-	//const FVector2D MoveInput = Value.Get<FVector2D>();
-
-	//if (MoveInput.IsNearlyZero()) return;
-
-	//FRotator ControlRotation = Controller->GetControlRotation();
-	//FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
-
-	//FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	//FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	//FVector MoveDirection = (ForwardDirection * MoveInput.X) + (RightDirection * MoveInput.Y);
-	//MoveDirection.Normalize();
-
-	//AddMovementInput(MoveDirection);
-
 	if (!Controller) return;
 
 	const FVector2D MoveInput = Value.Get<FVector2D>();
@@ -211,14 +194,22 @@ void ANXPlayerCharacter::StopSprint(const FInputActionValue& Value)
 
 void ANXPlayerCharacter::StartSit(const FInputActionValue& Value)
 {
-	Crouch();
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	if (!bIsCrouching)
+	{
+		Crouch();
+		bIsCrouching = true;
+		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	}
 }
 
 void ANXPlayerCharacter::StopSit(const FInputActionValue& Value)
 {
-	UnCrouch();
-	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	if (bIsCrouching)
+	{
+		UnCrouch();
+		bIsCrouching = false;
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	}
 }
 
 void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
