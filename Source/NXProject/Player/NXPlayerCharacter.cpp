@@ -1,4 +1,5 @@
 #include "Player/NXPlayerCharacter.h"
+#include "Player/NXCharacterBase.h"
 #include "Player/NXPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
@@ -32,7 +33,9 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
-	
+
+	MaxHealth = 100.0f; //초기 체력 설정.
+	Health = MaxHealth;
 
 }
 
@@ -162,6 +165,8 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		}
 	}
 }
+
+
 
 void ANXPlayerCharacter::Tick(float DeltaTime)
 {
@@ -308,11 +313,13 @@ void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
 
 void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
 {
+	if (!WeaponClass) return;
+
 	FName WeaponSocket(TEXT("WeaponSocket"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket) == true && IsValid(WeaponInstance) == false)
+	if (GetMesh()->DoesSocketExist(WeaponSocket) && IsValid(WeaponInstance))
 	{
-		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-		if (IsValid(WeaponInstance) == true)
+		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass);
+		if (IsValid(WeaponInstance))
 		{
 			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
 		}
@@ -328,3 +335,32 @@ void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
 	}
 }
 
+
+void ANXPlayerCharacter::AddHealth(float Amount)
+{
+	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+}
+
+float ANXPlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+
+	if (Health <= 0.0f)
+	{
+		OnDeath();
+	}
+
+	return ActualDamage;
+
+}
+
+void ANXPlayerCharacter::OnDeath()
+{
+
+}
+
+void ANXPlayerCharacter::Attack()
+{
+}
