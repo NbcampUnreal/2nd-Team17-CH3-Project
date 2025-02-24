@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class ANXWeaponActor;
 
 struct FInputActionValue;
 
@@ -27,11 +28,32 @@ protected:
 	float NormalSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float SprintSpeedMultiplier;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	float SprintSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float CrouchSpeedMultiplier;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	float CrouchSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float CrouchTransitionSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float CameraLerp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
+	TSubclassOf<ANXWeaponActor> WeaponClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
+	TObjectPtr<ANXWeaponActor> WeaponInstance;
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool GetIsCrouching() const;
+	bool bIsCrouching;
+
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	FTimerHandle CrouchTimerHandle;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -46,14 +68,23 @@ protected:
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& Value);
 	UFUNCTION()
-	void StartSit(const FInputActionValue& Value);
+	void StartCrouch(const FInputActionValue& Value);
 	UFUNCTION()
-	void StopSit(const FInputActionValue& Value);
+	void StopCrouch(const FInputActionValue& Value);
 	UFUNCTION()
 	void StartAttack(const FInputActionValue& Value);
 	UFUNCTION()
 	void StopAttack(const FInputActionValue& Value);
 	UFUNCTION()
 	void Reload(const FInputActionValue& Value);
+
+	void ApplyCrouch();
+
+	void ApplyUnCrouch();
+
+private:
+	void InputQuickSlot01(const FInputActionValue& Value);
+	void InputQuickSlot02(const FInputActionValue& Value);
+
 
 };

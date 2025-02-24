@@ -4,10 +4,14 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
+#include "NXWeaponActor.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -20,9 +24,15 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 
 	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.5f;
+	CrouchSpeedMultiplier = 0.5f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+	CrouchSpeed = NormalSpeed * CrouchSpeedMultiplier;
+	CrouchTransitionSpeed = 10.0f;
+	CameraLerp = 0.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	
 
 }
 
@@ -86,20 +96,20 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 				);
 			}
 
-			if (PlayerController->SitAction)
+			if (PlayerController->CrouchAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->SitAction,
+					PlayerController->CrouchAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ANXPlayerCharacter::StartSit
+					&ANXPlayerCharacter::StartCrouch
 				);
 
 				EnhancedInput->BindAction(
-					PlayerController->SitAction,
+					PlayerController->CrouchAction,
 					ETriggerEvent::Completed,
 					this,
-					&ANXPlayerCharacter::StopSit
+					&ANXPlayerCharacter::StopCrouch
 				);
 			}
 
@@ -129,29 +139,55 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 					&ANXPlayerCharacter::Reload
 				);
 			}
+
+			if (PlayerController->QuickSlot01)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->QuickSlot01,
+					ETriggerEvent::Triggered,
+					this,
+					&ANXPlayerCharacter::InputQuickSlot01
+				);
+			}
+
+			if (PlayerController->QuickSlot02)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->QuickSlot02,
+					ETriggerEvent::Triggered,
+					this,
+					&ANXPlayerCharacter::InputQuickSlot02
+				);
+			}
 		}
 	}
 }
 
+void ANXPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	float TargetCapsuleHeight = bIsCrouched ? 40.0f : 88.0f;
+	float CurrentCapsuleHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+	float NewCapsuleHeight = FMath::FInterpTo(CurrentCapsuleHeight, TargetCapsuleHeight, DeltaTime, CrouchTransitionSpeed);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(NewCapsuleHeight, true);
+	
+	float TargetCameraHeight = bIsCrouched ? 40.0f : 45.0f;
+	FVector NewCameraLocation = FMath::VInterpTo(
+		CameraComp->GetRelativeLocation(),
+		FVector(0, 0, TargetCameraHeight),
+		DeltaTime,
+		CrouchTransitionSpeed
+	);
+	CameraComp->SetRelativeLocation(NewCameraLocation);
+
+	float TargetLerp = bIsCrouched ? 0.5f : 0.0f;
+	CameraLerp = FMath::FInterpTo(CameraLerp, TargetLerp, DeltaTime, 5.0f);
+
+}
+
 void ANXPlayerCharacter::Move(const FInputActionValue& Value)
 {
-	//if (!Controller) return;
-
-	//const FVector2D MoveInput = Value.Get<FVector2D>();
-
-	//if (MoveInput.IsNearlyZero()) return;
-
-	//FRotator ControlRotation = Controller->GetControlRotation();
-	//FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
-
-	//FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	//FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	//FVector MoveDirection = (ForwardDirection * MoveInput.X) + (RightDirection * MoveInput.Y);
-	//MoveDirection.Normalize();
-
-	//AddMovementInput(MoveDirection);
-
 	if (!Controller) return;
 
 	const FVector2D MoveInput = Value.Get<FVector2D>();
@@ -209,16 +245,53 @@ void ANXPlayerCharacter::StopSprint(const FInputActionValue& Value)
 	}
 }
 
-void ANXPlayerCharacter::StartSit(const FInputActionValue& Value)
+void ANXPlayerCharacter::StartCrouch(const FInputActionValue& Value)
 {
-	Crouch();
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	if (CanCrouch())
+	{
+		Crouch();
+		bIsCrouching = true;
+	}
+		GetWorld()->GetTimerManager().SetTimer(CrouchTimerHandle, this, &ANXPlayerCharacter::ApplyCrouch, 0.05f, true);
 }
 
-void ANXPlayerCharacter::StopSit(const FInputActionValue& Value)
+void ANXPlayerCharacter::StopCrouch(const FInputActionValue& Value)
 {
-	UnCrouch();
-	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	if (bIsCrouched)
+	{
+		UnCrouch();
+		bIsCrouching = false;
+	}
+		GetWorld()->GetTimerManager().SetTimer(CrouchTimerHandle, this, &ANXPlayerCharacter::ApplyUnCrouch, 0.05f, true);
+}
+
+void ANXPlayerCharacter::ApplyCrouch()
+{
+	float CurrentSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	float NewSpeed = FMath::FInterpTo(CurrentSpeed, CrouchSpeed, GetWorld()->GetDeltaSeconds(), 5.0f);
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+
+	if (FMath::IsNearlyEqual(NewSpeed, CrouchSpeed, 1.0f))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(CrouchTimerHandle);
+	}
+}
+
+void ANXPlayerCharacter::ApplyUnCrouch()
+{
+	float CurrentSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	float NewSpeed = FMath::FInterpTo(CurrentSpeed, NormalSpeed, GetWorld()->GetDeltaSeconds(), 5.0f);
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+
+	if (FMath::IsNearlyEqual(NewSpeed, NormalSpeed, 1.0f))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(CrouchTimerHandle);
+	}
+}
+
+bool ANXPlayerCharacter::GetIsCrouching() const
+{
+	return bIsCrouched;
 }
 
 void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
@@ -231,5 +304,27 @@ void ANXPlayerCharacter::StopAttack(const FInputActionValue& Value)
 
 void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
 {
+}
+
+void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
+{
+	FName WeaponSocket(TEXT("WeaponSocket"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket) == true && IsValid(WeaponInstance) == false)
+	{
+		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		if (IsValid(WeaponInstance) == true)
+		{
+			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+		}
+	}
+}
+
+void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
+{
+	if (IsValid(WeaponInstance) == true)
+	{
+		WeaponInstance->Destroy();
+		WeaponInstance = nullptr;
+	}
 }
 
