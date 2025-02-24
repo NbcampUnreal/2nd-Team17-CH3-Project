@@ -3,12 +3,31 @@
 
 ANXCharacterBase::ANXCharacterBase()
 {
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ANXCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+int32 ANXCharacterBase::GetHealth() const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	return int32();
 }
 
+void ANXCharacterBase::AddHealth(float Amount)
+{
+}
+
+void ANXCharacterBase::BeginPlay()
+{
+}
+
+void ANXCharacterBase::OnDeath()
+{
+}
+
+float ANXCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	return 0.0f;
+}
+
+void ANXCharacterBase::Attack()
+{
+}
