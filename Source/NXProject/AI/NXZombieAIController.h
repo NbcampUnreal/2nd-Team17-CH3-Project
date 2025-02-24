@@ -15,6 +15,8 @@ class NXPROJECT_API ANXZombieAIController : public AAIController
 public:
 	ANXZombieAIController();
 
+	friend class ANXZombieCharacter;
+
 protected:
 
 	virtual void BeginPlay() override;
