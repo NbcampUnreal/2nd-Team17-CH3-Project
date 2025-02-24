@@ -11,5 +11,11 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 	WalkSpeed = 80.f;
 	RunSpeed = 300.f;
 
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
+
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
