@@ -20,13 +20,6 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    /** 체력 시스템 */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-    float Health;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
-    float MaxHealth;
-
     /** 피격 처리 */
     virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
         AController* EventInstigator, AActor* DamageCauser) override;

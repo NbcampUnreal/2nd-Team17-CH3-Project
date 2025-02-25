@@ -32,11 +32,6 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 	UpdateOverheadHP();
 }
 
-int32 ANXNonPlayerCharacter::GetHealth() const
-{
-	return Health;
-}
-
 void ANXNonPlayerCharacter::UpdateOverheadHP()
 {
 	if (!OverheadWidget)
