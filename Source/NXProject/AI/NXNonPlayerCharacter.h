@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "NXNonPlayerCharacter.generated.h"
 
-class UWidgetComponent;
 /**
  * 
  */
@@ -17,15 +16,9 @@ class NXPROJECT_API ANXNonPlayerCharacter : public ANXCharacterBase
 	
 public:
 	ANXNonPlayerCharacter();
-	UPROPERTY()
-	float WalkSpeed;
-	float RunSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	UWidgetComponent* OverheadWidget;
-	void UpdateOverheadHP();
+	virtual void BeginPlay() override;
+
 protected:
-	
-	virtual void OnDeath()override;
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 };
