@@ -15,7 +15,9 @@ public class NXProject : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 			
 			//AI
-			"AIModule","NavigationSystem", "GameplayTasks"
+			"AIModule","NavigationSystem", "GameplayTasks",
+			//UI
+			"UMG"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

@@ -14,13 +14,18 @@ class NXPROJECT_API ANXAIController : public AAIController
 	GENERATED_BODY()
 	
 public:
-	float StopMoveTime;
 
-	FTimerHandle MoveTimerHandle;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess))
+	TObjectPtr<UBlackboardData> BlackboardDataAsset;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess))
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void BeginPlay() override;
-	/*virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
-	void RandomMove();*/
+	void BeginAI(APawn* InPawn);
+
+	void EndAI();
+
 };
