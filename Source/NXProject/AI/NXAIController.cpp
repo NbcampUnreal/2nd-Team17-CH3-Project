@@ -11,17 +11,39 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+const float ANXAIController::PatrolRadius(1000.f);
+int32 ANXAIController::ShowAIDebug(0);
+const FName ANXAIController::StartPatrolPositionKey(TEXT("StartPatrolPosition"));
+const FName ANXAIController::EndPatrolPositionKey(TEXT("EndPatrolPosition"));
+const FName ANXAIController::TargetCharacterKey(TEXT("TargetCharacter"));
 
+FAutoConsoleVariableRef CVarShowAIDebug2(
+	TEXT("NXProject.ShowAIDebug"),
+	ANXAIController::ShowAIDebug,
+	TEXT(""),
+	ECVF_Cheat
+);
 
-void ANXAIController::OnPossess(APawn* InPawn)
+ANXAIController::ANXAIController()
 {
-	Super::OnPossess(InPawn);
+	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
+	BrainComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BrainComponent"));
 }
 
 void ANXAIController::BeginPlay()
 {
 	Super::BeginPlay();
-   
+	APawn* ControlledPawn = GetPawn();
+	if (IsValid(ControlledPawn) == true)
+	{
+		BeginAI(ControlledPawn);
+	}
+}
+
+void ANXAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	EndAI();
+	Super::EndPlay(EndPlayReason);
 }
 
 void ANXAIController::BeginAI(APawn* InPawn)
@@ -32,7 +54,14 @@ void ANXAIController::BeginAI(APawn* InPawn)
 		if (UseBlackboard(BlackboardDataAsset, BlackboardComponent) == true)
 		{
 			bool bRunSucceeded = RunBehaviorTree(BehaviorTree);
+			checkf(bRunSucceeded == true, TEXT("Fail to run behavior tree."));
 
+			BlackboardComponent->SetValueAsVector(StartPatrolPositionKey, InPawn->GetActorLocation());
+
+			if (ShowAIDebug == 1)
+			{
+				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("BegintAI()")));
+			}
 		}
 	}
 }
@@ -43,5 +72,10 @@ void ANXAIController::EndAI()
 	if (IsValid(BehaviorTreeComponent) == true)
 	{
 		BehaviorTreeComponent->StopTree();
+		if (ShowAIDebug == 1)
+		{
+			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("EndAI()")));
+		}
 	}
 }
+
