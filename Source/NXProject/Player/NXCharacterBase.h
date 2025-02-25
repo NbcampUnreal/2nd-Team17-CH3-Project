@@ -28,11 +28,11 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	virtual void OnDeath(); // 사망 처리 함수 (체력 0 이하 호출)
 
-	//데미지 처리 함수
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 
 public:
 	virtual void Attack();
+	//데미지 처리 함수
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 };

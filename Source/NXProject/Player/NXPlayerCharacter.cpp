@@ -1,6 +1,7 @@
 #include "Player/NXPlayerCharacter.h"
 #include "Player/NXCharacterBase.h"
 #include "Player/NXPlayerController.h"
+#include "AI/NXZombieCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -9,6 +10,8 @@
 #include "TimerManager.h"
 #include "NXWeaponActor.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/DamageType.h"
+#include "Engine/DamageEvents.h"
 
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
@@ -341,7 +344,11 @@ void ANXPlayerCharacter::AddHealth(float Amount)
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
 }
 
-float ANXPlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float ANXPlayerCharacter::TakeDamage(
+	float DamageAmount,
+	struct FDamageEvent const& DamageEvent,
+	AController* EventInstigator,
+	AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
@@ -363,4 +370,28 @@ void ANXPlayerCharacter::OnDeath()
 
 void ANXPlayerCharacter::Attack()
 {
+	FVector StartLocation = GetActorLocation();
+	FVector ForwardVector = GetActorForwardVector();
+	FVector EndLocation = StartLocation + (ForwardVector * 200.0f);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Pawn, QueryParams);
+
+	if (bHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor)
+		{
+			ANXZombieCharacter* Zombie = Cast<ANXZombieCharacter>(HitActor);
+			if (Zombie)
+			{
+				FDamageEvent DamageEvent;
+				Zombie->TakeDamage(20.0f, DamageEvent, GetController(), this);
+				UE_LOG(LogTemp, Warning, TEXT("Hit Zombie!"));
+			}
+		}
+	}
 }

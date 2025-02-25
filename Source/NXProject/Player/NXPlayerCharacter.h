@@ -19,6 +19,11 @@ public:
 	ANXPlayerCharacter();
 
 	virtual void Attack() override;
+	virtual float TakeDamage(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		AController* EventInstigator,
+		AActor* DamageCauser) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -86,7 +91,6 @@ protected:
 
 	virtual void AddHealth(float Amount) override;
 	virtual void OnDeath() override;
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 private:
 	void InputQuickSlot01(const FInputActionValue& Value);
