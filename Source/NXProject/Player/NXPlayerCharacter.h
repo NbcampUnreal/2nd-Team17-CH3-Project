@@ -17,6 +17,7 @@ class NXPROJECT_API ANXPlayerCharacter : public ANXCharacterBase
 
 public:
 	ANXPlayerCharacter();
+
 	virtual void Attack() override;
 
 protected:
