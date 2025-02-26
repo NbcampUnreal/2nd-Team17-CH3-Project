@@ -12,6 +12,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
+#include "Engine/Engine.h"
 
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
@@ -389,11 +390,16 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
+			FString::Printf(TEXT("Player HP: %.1f / %.1f"), Health, MaxHealth));
+	}
+
 	if (Health <= 0.0f)
 	{
 		OnDeath();
 	}
-
 	return ActualDamage;
 }
 
