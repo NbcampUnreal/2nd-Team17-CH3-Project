@@ -20,6 +20,15 @@ public:
 
 	void OnCheckHit();
 
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void OnDeath();
+
+	float TakeDamage(float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		AController* EventInstigator,
+		AActor* DamageCauser
+	);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -51,6 +60,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool GetIsCrouching() const;
 	bool bIsCrouching;
+	bool bIsAttacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float MaxHealth;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health;
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -16,6 +16,9 @@ class NXPROJECT_API ANXZombieCharacter : public ANXCharacterBase
 
 public:
     ANXZombieCharacter();
+    /** 乔拜 贸府 */
+    virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+        AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
     virtual void BeginPlay() override;
@@ -27,9 +30,6 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
     float MaxHealth;
 
-    /** 乔拜 贸府 */
-    virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
-        AController* EventInstigator, AActor* DamageCauser) override;
 
     /** 荤噶 贸府 */
     void Die();

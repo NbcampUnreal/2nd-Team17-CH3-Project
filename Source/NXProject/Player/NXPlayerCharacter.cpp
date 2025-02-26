@@ -11,6 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/World.h"
+#include "Engine/DamageEvents.h"
 
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
@@ -35,6 +36,9 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	MaxHealth = 100.0f;
+	Health = MaxHealth;
 
 	bIsAttacking = false;
 	
@@ -322,10 +326,6 @@ void ANXPlayerCharacter::StopAttack(const FInputActionValue& Value)
 	bIsAttacking = false;
 }
 
-void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
-{
-}
-
 void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
 {
 	FName WeaponSocket(TEXT("WeaponSocket"));
@@ -376,13 +376,55 @@ void ANXPlayerCharacter::OnCheckHit()
 	}
 }
 
+
+float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+
+	if (Health <= 0.0f)
+	{
+		OnDeath();
+	}
+
+	return ActualDamage;
+}
+
+void ANXPlayerCharacter::OnDeath()
+{
+	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
+}
+
 void ANXPlayerCharacter::EquipWepon()
 {
 	FName WeaponSocket(TEXT("WeaponSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket) && !IsValid(WeaponInstance))
 	{
 		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-
+		if (IsValid(WeaponInstance))
+		{
+			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+			UE_LOG(LogTemp, Log, TEXT("Weapon Equipped"));
+		}
 	}
 }
 
+void ANXPlayerCharacter::UnequipWeapon()
+{
+	if (IsValid(WeaponInstance))
+	{
+		WeaponInstance->Destroy();
+		WeaponInstance = nullptr;
+		UE_LOG(LogTemp, Log, TEXT("Weapon Unequipped"));
+	}
+}
+
+void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
+{
+	if (IsValid(WeaponInstance))
+	{
+		WeaponInstance->ReloadConfig();
+		UE_LOG(LogTemp, Log, TEXT("Weapon Reloaded"));
+	}
+}
