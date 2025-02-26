@@ -18,6 +18,8 @@ class NXPROJECT_API ANXPlayerCharacter : public ANXCharacterBase
 public:
 	ANXPlayerCharacter();
 
+	void OnCheckHit();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -77,6 +79,10 @@ protected:
 	void StopAttack(const FInputActionValue& Value);
 	UFUNCTION()
 	void Reload(const FInputActionValue& Value);
+	UFUNCTION()
+	void EquipWepon();
+	UFUNCTION()
+	void UnequipWeapon();
 
 	void ApplyCrouch();
 

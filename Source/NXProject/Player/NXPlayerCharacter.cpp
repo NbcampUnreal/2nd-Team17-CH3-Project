@@ -7,7 +7,10 @@
 #include "Components/CapsuleComponent.h"
 #include "TimerManager.h"
 #include "NXWeaponActor.h"
+#include "AI/NXZombieCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Engine/World.h"
 
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
@@ -32,6 +35,8 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	bIsAttacking = false;
 	
 
 }
@@ -296,10 +301,25 @@ bool ANXPlayerCharacter::GetIsCrouching() const
 
 void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 {
+	if (GetCharacterMovement()->IsFalling() == true)
+	{
+		return;
+	}
+
+	if (!IsValid(WeaponInstance))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped!"));
+		return;
+	}
+
+	bIsAttacking = true;
+	OnCheckHit();
+	
 }
 
 void ANXPlayerCharacter::StopAttack(const FInputActionValue& Value)
 {
+	bIsAttacking = false;
 }
 
 void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
@@ -325,6 +345,44 @@ void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
 	{
 		WeaponInstance->Destroy();
 		WeaponInstance = nullptr;
+	}
+}
+
+void ANXPlayerCharacter::OnCheckHit()
+{
+	FVector StartLocation = GetActorLocation();
+	FVector ForwardVector = GetActorForwardVector();
+	FVector EndLocation = StartLocation + (ForwardVector * 200.0f);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Pawn, QueryParams);
+
+	if (bHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor)
+		{
+			ANXZombieCharacter* Zombie = Cast<ANXZombieCharacter>(HitActor);
+			if (Zombie)
+			{
+				FDamageEvent DamageEvent;
+				Zombie->TakeDamage(20.0f, DamageEvent, GetController(), this);
+				UE_LOG(LogTemp, Warning, TEXT("Hit Zombie!"));
+			}
+		}
+	}
+}
+
+void ANXPlayerCharacter::EquipWepon()
+{
+	FName WeaponSocket(TEXT("WeaponSocket"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket) && !IsValid(WeaponInstance))
+	{
+		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+
 	}
 }
 
