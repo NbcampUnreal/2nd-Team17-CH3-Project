@@ -31,7 +31,7 @@ void ASUIPlayerController::BeginPlay()
 			// UI 전용 입력 모드 설정 (플레이어 입력을 UI 위젯으로 제한)
 			FInputModeUIOnly Mode;
 			Mode.SetWidgetToFocus(UIWidgetInstance->GetCachedWidget()); // UI 위젯을 포커스로 지정
-			SetInputMode(Mode); // 플레이어 컨트롤러의 입력 모드를 UI 전용으로 변경
+			//SetInputMode(Mode); // 플레이어 컨트롤러의 입력 모드를 UI 전용으로 변경/하면 안됨 그러면 안 움직임
 
 			// 마우스 커서를 화면에 표시
 			bShowMouseCursor = true;

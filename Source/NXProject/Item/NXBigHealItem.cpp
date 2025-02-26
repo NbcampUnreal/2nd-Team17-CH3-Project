@@ -8,5 +8,6 @@ ANXBigHealItem::ANXBigHealItem()
 
 void ANXBigHealItem::ActivateItem(AActor* Activator)
 {
+	//회복하는 그거 추가
 	DestroyItem();
 }

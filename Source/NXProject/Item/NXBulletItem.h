@@ -16,4 +16,7 @@ public:
     // 아이템 사용할 때 BulletCount만큼 충전
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 BulletCount;
+
+    //맥스 불렛? 선언
+    //잔량/풀충 카운트
 };

@@ -8,5 +8,6 @@ ANXHealItem::ANXHealItem()
 
 void ANXHealItem::ActivateItem(AActor* Activator)
 {
+	//힐링하는 회복 로직 추가해야함
 	DestroyItem();
 }
