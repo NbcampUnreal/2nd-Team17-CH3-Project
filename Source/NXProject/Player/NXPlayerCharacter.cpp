@@ -172,6 +172,12 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
+void ANXPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT("HP : %f"), Health);
+}
+
 void ANXPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
