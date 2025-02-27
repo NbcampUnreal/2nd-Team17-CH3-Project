@@ -8,6 +8,11 @@ ANXHealItem::ANXHealItem()
 
 void ANXHealItem::ActivateItem(AActor* Activator)
 {
-	//힐링하는 회복 로직 추가해야함
-	DestroyItem();
+	if (Activator && Activator->ActorHasTag("Player"))
+	{
+		// 회복 디버그 메시지
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player gained %d HP!"), HealAmount));
+
+		DestroyItem();
+	}
 }

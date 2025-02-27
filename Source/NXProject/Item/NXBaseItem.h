@@ -15,30 +15,37 @@ class NXPROJECT_API ANXBaseItem : public AActor, public INXItemInterface //인�
 public:	
 	ANXBaseItem();
 
-	void DestroyItem() //함수를 통해 사라지기(그 함수는 오버랩)
-	{
-		Destroy(); 
-	}
-
 protected:
 	//컴포넌트별 리플렉션
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;
 
-	UPROPERTY(visibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
 	USceneComponent* Scene;
-	UPROPERTY(visibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
 	USphereComponent* Collision;
-	UPROPERTY(visibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
 	UStaticMeshComponent* StaticMesh;
 
 	//액터에 진입했을 때(오버랩)
-	virtual void OnItemOverlap(AActor* OverlapActor) override;
+	virtual void OnItemOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult) override;
 	//액터 진입 이후(오버랩 이후)
-	virtual void OnItemEndOverlap(AActor* OverlapActor) override;
+	virtual void OnItemEndOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex) override;
+
 	//아이템 사용
 	virtual void ActivateItem(AActor* Activator) override;
 	//아이템 이름으로 구분하여 사용
 	virtual FName GetItemType() const override;
 
+	void DestroyItem(); //함수를 통해 사라지기(그 함수는 오버랩)
 };

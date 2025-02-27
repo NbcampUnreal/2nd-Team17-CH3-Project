@@ -23,4 +23,6 @@ public:
     void SetHealAmount(float NewHealAmount) { HealAmount = NewHealAmount; }
 
     virtual void ActivateItem(AActor* Activator) override;
+
+
 };
