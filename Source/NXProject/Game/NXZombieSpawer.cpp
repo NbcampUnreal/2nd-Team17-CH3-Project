@@ -1,13 +1,13 @@
-//#include "Game/NXSpawner.h"
+//#include "Game/NXZombieSpawer.h"
+//#include "AI/NXNonPlayerCharacter.h"
+//#include "Components/BoxComponent.h"
 //#include "Kismet/KismetMathLibrary.h"
 //#include "Engine/World.h"
-//#include "Components/BoxComponent.h"
 //
-//ANXSpawner::ANXSpawner()
+//ANXZombieSpawer::ANXZombieSpawer()
 //{
-//    PrimaryActorTick.bCanEverTick = false;
+//    PrimaryActorTick.bCanEverTick = true;
 //
-//    // 박스 컴포넌트 생성 후 루트 설정
 //    Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 //    SetRootComponent(Scene);
 //
@@ -15,7 +15,8 @@
 //    SpawningBox->SetupAttachment(Scene);
 //}
 //
-//FVector ANXSpawner::GetRandomPointInVolume() const
+//// 스폰 박스 내부 랜덤 위치 가져오기
+//FVector ANXZombieSpawer::GetRandomPointInVolume() const
 //{
 //    FVector BoxExtent = SpawningBox->GetScaledBoxExtent();
 //    FVector BoxOrigin = SpawningBox->GetComponentLocation();
@@ -27,10 +28,10 @@
 //    );
 //}
 //
-//// 아이템 스폰 함수
-//void ANXSpawner::SpawnItem(TSubclassOf<AActor> ItemClass)
+//// 좀비 스폰 함수
+//void ANXZombieSpawer::SpawnZombie(TSubclassOf<ANXNonPlayerCharacter> ZombieClass)
 //{
-//    if (!ItemClass) return;
+//    if (!ZombieClass) return;
 //
 //    UWorld* World = GetWorld();
 //    if (!World)
@@ -46,10 +47,9 @@
 //        return;
 //    }
 //
-//    // 아이템 생성
-//    AActor* SpawnedItem = World->SpawnActor<AActor>(ItemClass, SpawnLocation, FRotator::ZeroRotator);
-//    if (!SpawnedItem)
+//    ANXNonPlayerCharacter* SpawnedZombie = World->SpawnActor<ANXNonPlayerCharacter>(ZombieClass, SpawnLocation, FRotator::ZeroRotator);
+//    if (!SpawnedZombie)
 //    {
-//        UE_LOG(LogTemp, Warning, TEXT("Failed to spawn item!"));
+//        UE_LOG(LogTemp, Warning, TEXT("Failed to spawn zombie!"));
 //    }
 //}

@@ -4,6 +4,9 @@
 #include "Engine/DataTable.h"  // 데이터 테이블을 사용하려면 필요함
 #include "WaveData.generated.h"
 
+
+class ARandomSpawner;
+
 USTRUCT(BlueprintType)
 struct FWaveData : public FTableRowBase
 {
@@ -29,3 +32,5 @@ struct FWaveData : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<AActor> ZombieClass;
 };
+
+//데이터 테이블 구성요소
