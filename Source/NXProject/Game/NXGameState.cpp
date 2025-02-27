@@ -1,18 +1,21 @@
-//#include "Game/NXGameState.h"
-//#include "Player/NXPlayerController.h"
-//#include "Components/TextBlock.h"
-//#include "Game/NXGameInstance.h"
-//
-//
-//ANXGameState::ANXGameState()
-//{
-//	Score = 0;
-//	CurrentWaveIndex = 0;
-//	MaxWaves = 2;
-//	ZombiesToSpawnPerWave = { 30, 50 };
-//	KilledZombieCount = 0;
-//}
-//
+#include "Game/NXGameState.h"
+#include "Player/NXPlayerController.h"
+#include "Components/TextBlock.h"
+#include "Game/NXGameInstance.h"
+#include "Engine/Engine.h"
+
+
+ANXGameState::ANXGameState()
+{
+	Score = 0;
+
+	/*Score = 0;
+	CurrentWaveIndex = 0;
+	MaxWaves = 2;
+	ZombiesToSpawnPerWave = { 30, 50 };
+	KilledZombieCount = 0;*/
+}
+
 //void ANXGameState::BeginPlay()
 //{
 //	Super::BeginPlay();
@@ -25,13 +28,19 @@
 //		true
 //	);
 //}
-//
-//int32 ANXGameState::AddScore(int32 Amount)
-//{
-//	if 
-//}
-//
-//
+
+int32 ANXGameState::GetScore() const
+{
+	return Score;
+}
+
+void ANXGameState::AddScore(int32 Amount)
+{
+	Score += Amount;
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Score: %d"), Score));
+}
+
+
 //startLevel
 //StartWave
 ////코인스폰대신 좀비로 킬드좀비카운트=0 // 
@@ -41,6 +50,6 @@
 //
 //endWave
 ////다음 웨이브 진행
-//
-//
-//
+
+
+

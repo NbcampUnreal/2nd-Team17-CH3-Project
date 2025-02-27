@@ -6,6 +6,9 @@
 #include "Components/WidgetComponent.h"
 #include "Components/ProgressBar.h"
 #include "Engine/Engine.h"
+#include "Game/NXGameState.h"
+#include "Game/NXGameInstance.h"
+
 
 
 ANXNonPlayerCharacter::ANXNonPlayerCharacter()
@@ -14,7 +17,7 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	bUseControllerRotationYaw = false;
-
+	bIsDead = false;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
@@ -86,6 +89,10 @@ void ANXNonPlayerCharacter::UpdateOverheadHP()
 
 float ANXNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bIsDead)
+	{
+		return 0.f;
+	}
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	if (ActualDamage > 0.f)
@@ -113,6 +120,13 @@ float ANXNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 
 void ANXNonPlayerCharacter::OnDeath()
 {
+	if (bIsDead)
+	{
+		return;
+	}
+
+	bIsDead = true;
+
 	ANXAIController* AIController = Cast<ANXAIController>(GetController());
 	if (IsValid(AIController))
 	{
@@ -124,5 +138,12 @@ void ANXNonPlayerCharacter::OnDeath()
 		GetMesh()->GetAnimInstance()->Montage_Play(NPCDeadAnimation,1.f);
 	}
 	SetLifeSpan(3.f);
+	if (UWorld* World = GetWorld())
+	{
+		if (ANXGameState* GameState = World->GetGameState<ANXGameState>())
+		{
+			GameState->AddScore(1);
+		}
+	}
 
 }
