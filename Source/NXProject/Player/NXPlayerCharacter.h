@@ -103,6 +103,9 @@ protected:
 	void ApplyCrouch();
 
 	void ApplyUnCrouch();
+	//이인화 : NPC 피격 및 사망 확인을 위한 코드 삭제해도 괜찮습니다
+	UFUNCTION()
+	void MeleeAttack();
 
 private:
 	void InputQuickSlot01(const FInputActionValue& Value);

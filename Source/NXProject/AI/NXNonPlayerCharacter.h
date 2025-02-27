@@ -29,8 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadWidget;
 
-
 	void UpdateOverheadHP();
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
@@ -38,7 +39,6 @@ protected:
 	float Health;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	virtual void OnDeath();
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime)override;
 };

@@ -8,11 +8,13 @@
 #include "TimerManager.h"
 #include "NXWeaponActor.h"
 #include "AI/NXZombieCharacter.h"
+#include "AI/NXNonPlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
+#include "Engine/OverlapResult.h"
 
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
@@ -305,6 +307,7 @@ void ANXPlayerCharacter::ApplyUnCrouch()
 	}
 }
 
+
 bool ANXPlayerCharacter::GetIsCrouching() const
 {
 	return bIsCrouched;
@@ -324,6 +327,8 @@ void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 	}
 
 	bIsAttacking = true;
+	//이인화 : NPC 피격 및 사망 처리를 확인하기 위한 코드 삭제 가능
+	MeleeAttack();
 	OnCheckHit();
 	
 }
@@ -438,5 +443,49 @@ void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
 	{
 		WeaponInstance->ReloadConfig();
 		UE_LOG(LogTemp, Log, TEXT("Weapon Reloaded"));
+	}
+}
+//이인화 : NPC 피격 확인을 위해 작성한 코드 삭제해도 괜찮습니다
+void ANXPlayerCharacter::MeleeAttack()
+{
+	APawn* PawnOwner = this;
+	if (!PawnOwner)return;
+
+	FVector AttackLocation = PawnOwner->GetActorLocation() + PawnOwner->GetActorForwardVector() * 100.f;
+
+	TArray<FOverlapResult> OverlapResults;
+	FCollisionQueryParams CollisionQueryParams(NAME_None, false, PawnOwner);
+
+	bool bResult = GetWorld()->OverlapMultiByChannel(
+		OverlapResults,
+		AttackLocation,
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn,
+		FCollisionShape::MakeSphere(30.f),
+		CollisionQueryParams
+	);
+	if (bResult == true)
+	{
+		AController* OwnerController = PawnOwner->GetController();
+		TSet<AActor*> HitPlayers;
+
+		for (auto const& OverlapResult : OverlapResults)
+		{
+			ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(OverlapResult.GetActor());
+			if (IsValid(NPC) && !HitPlayers.Contains(NPC))
+			{
+				NPC->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
+				HitPlayers.Add(NPC);
+				DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
+				}
+			}
+		}
+	}
+	else
+	{
+		DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
 	}
 }
