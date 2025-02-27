@@ -16,7 +16,10 @@ class NXPROJECT_API UNXNPCAnimInstance : public UAnimInstance
 protected:
 	UFUNCTION()
 	void AnimNotify_CheckHit();
-
+	UFUNCTION()
+	void AnimNotify_CheckHit2();
 public:
 	FOnCheckHit OnCheckHit;
+
+	FOnCheckHit OnCheckHit2;
 };

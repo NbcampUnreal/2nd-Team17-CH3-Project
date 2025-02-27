@@ -2,6 +2,7 @@
 #include "AI/NXNonPlayerCharacter.h"
 #include "AI/NXAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "Components/ProgressBar.h"
 #include "Engine/Engine.h"
@@ -23,7 +24,7 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(GetMesh());
-	OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	OverheadWidget->SetWidgetSpace(EWidgetSpace::World);
 
 }
 
@@ -31,6 +32,29 @@ void ANXNonPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateOverheadHP();
+}
+
+void ANXNonPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (OverheadWidget)
+	{
+		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		if (PlayerCharacter)
+		{
+			FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+			FVector WidgetLocation = OverheadWidget->GetComponentLocation();
+
+			FRotator LookAtRotation = (PlayerLocation - WidgetLocation).Rotation();
+			OverheadWidget->SetWorldRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f));
+
+			float Distance = FVector::Dist(PlayerLocation, WidgetLocation);
+			float ScaleFactor = FMath::Clamp(Distance / 500.f, 0.5f, 1.5f);
+			OverheadWidget->SetWorldScale3D(FVector(ScaleFactor));
+
+		}
+	}
 }
 
 int32 ANXNonPlayerCharacter::GetHealth() const

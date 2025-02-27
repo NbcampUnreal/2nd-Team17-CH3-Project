@@ -40,4 +40,5 @@ protected:
 	virtual void OnDeath();
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime)override;
 };
