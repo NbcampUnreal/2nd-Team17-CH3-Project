@@ -18,6 +18,8 @@ protected:
 	void AnimNotify_CheckHit();
 	UFUNCTION()
 	void AnimNotify_CheckHit2();
+	UFUNCTION()
+	void AnimNotify_CheckHit3();
 public:
 	FOnCheckHit OnCheckHit;
 
