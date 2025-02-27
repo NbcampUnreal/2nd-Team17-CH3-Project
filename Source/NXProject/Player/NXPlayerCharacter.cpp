@@ -14,8 +14,9 @@
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
+//이인화 : 피격 확인을 위해 작성한 코드입니다 삭제하셔도 괜찮습니다 ------------
 #include "Engine/OverlapResult.h"
-
+//-----------------
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -326,10 +327,11 @@ void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 		return;
 	}
 
-	bIsAttacking = true;
-	//이인화 : NPC 피격 및 사망 처리를 확인하기 위한 코드 삭제 가능
+	//이인화 : NPC 피격 및 사망 처리를 확인하기 위한 코드 삭제 가능--------------
 	MeleeAttack();
+	//-------------
 	OnCheckHit();
+	bIsAttacking = true;
 	
 }
 
@@ -445,47 +447,55 @@ void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
 		UE_LOG(LogTemp, Log, TEXT("Weapon Reloaded"));
 	}
 }
-//이인화 : NPC 피격 확인을 위해 작성한 코드 삭제해도 괜찮습니다
+//이인화 : NPC 피격 확인을 위해 작성한 코드 삭제해도 괜찮습니다--------
 void ANXPlayerCharacter::MeleeAttack()
 {
-	APawn* PawnOwner = this;
-	if (!PawnOwner)return;
-
-	FVector AttackLocation = PawnOwner->GetActorLocation() + PawnOwner->GetActorForwardVector() * 100.f;
-
-	TArray<FOverlapResult> OverlapResults;
-	FCollisionQueryParams CollisionQueryParams(NAME_None, false, PawnOwner);
-
-	bool bResult = GetWorld()->OverlapMultiByChannel(
-		OverlapResults,
-		AttackLocation,
-		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn,
-		FCollisionShape::MakeSphere(30.f),
-		CollisionQueryParams
-	);
-	if (bResult == true)
+	if (bIsAttacking==true)
 	{
-		AController* OwnerController = PawnOwner->GetController();
-		TSet<AActor*> HitPlayers;
+		return;
+	}
+	if (bIsAttacking==false) 
+	{
+		APawn* PawnOwner = this;
+		if (!PawnOwner)return;
 
-		for (auto const& OverlapResult : OverlapResults)
+		FVector AttackLocation = PawnOwner->GetActorLocation() + PawnOwner->GetActorForwardVector() * 100.f;
+
+		TArray<FOverlapResult> OverlapResults;
+		FCollisionQueryParams CollisionQueryParams(NAME_None, false, PawnOwner);
+
+		bool bResult = GetWorld()->OverlapMultiByChannel(
+			OverlapResults,
+			AttackLocation,
+			FQuat::Identity,
+			ECollisionChannel::ECC_Pawn,
+			FCollisionShape::MakeSphere(30.f),
+			CollisionQueryParams
+		);
+		if (bResult == true)
 		{
-			ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(OverlapResult.GetActor());
-			if (IsValid(NPC) && !HitPlayers.Contains(NPC))
+			AController* OwnerController = PawnOwner->GetController();
+			TSet<AActor*> HitPlayers;
+
+			for (auto const& OverlapResult : OverlapResults)
 			{
-				NPC->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
-				HitPlayers.Add(NPC);
-				DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
-				if (GEngine)
+				ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(OverlapResult.GetActor());
+				if (IsValid(NPC) && !HitPlayers.Contains(NPC))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
+					NPC->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
+					HitPlayers.Add(NPC);
+					DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
+					}
 				}
 			}
 		}
-	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
+		else
+		{
+			DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
+		}
 	}
 }
+//-------------

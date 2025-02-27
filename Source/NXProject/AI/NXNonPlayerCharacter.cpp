@@ -137,7 +137,7 @@ void ANXNonPlayerCharacter::OnDeath()
 		//사망 애니메이션 실행
 		GetMesh()->GetAnimInstance()->Montage_Play(NPCDeadAnimation,1.f);
 	}
-	SetLifeSpan(3.f);
+	SetLifeSpan(1.5f);
 	if (UWorld* World = GetWorld())
 	{
 		if (ANXGameState* GameState = World->GetGameState<ANXGameState>())
