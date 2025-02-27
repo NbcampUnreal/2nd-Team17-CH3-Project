@@ -27,6 +27,7 @@ ANXBaseItem::ANXBaseItem()
     Collision->OnComponentEndOverlap.AddDynamic(this, &ANXBaseItem::OnItemEndOverlap);
 }
 
+
 void ANXBaseItem::OnItemOverlap(
     UPrimitiveComponent* OverlappedComp,
     AActor* OtherActor,
@@ -34,7 +35,6 @@ void ANXBaseItem::OnItemOverlap(
     int32 OtherBodyIndex,
     bool bFromSweep,
     const FHitResult& SweepResult)
-
 {
     if (OtherActor && OtherActor->ActorHasTag("Player"))
     {
@@ -42,7 +42,6 @@ void ANXBaseItem::OnItemOverlap(
         ActivateItem(OtherActor);
     }
 }
-
 
 void ANXBaseItem::OnItemEndOverlap(
     UPrimitiveComponent* OverlappedComp,
@@ -54,7 +53,6 @@ void ANXBaseItem::OnItemEndOverlap(
 
 void ANXBaseItem::ActivateItem(AActor* Activator)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!!")));
 }
 
 FName ANXBaseItem::GetItemType() const
@@ -64,6 +62,5 @@ FName ANXBaseItem::GetItemType() const
 
 void ANXBaseItem::DestroyItem()
 {
-    // 아이템을 파괴할 때 사라지도록 처리
     Destroy();
 }

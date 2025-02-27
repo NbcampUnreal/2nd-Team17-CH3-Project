@@ -13,6 +13,12 @@ class NXPROJECT_API ANXBigHealItem : public ANXBaseItem
 public:
     ANXBigHealItem();
 
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    class USphereComponent* CollisionComponent;
+
+   UFUNCTION()
+    void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
+
     UPROPERTY(EditAnywhere, Category = "Item")
     float HealAmount; //회복량 블루프린트에서 수정가능
 
@@ -23,6 +29,4 @@ public:
     void SetHealAmount(float NewHealAmount) { HealAmount = NewHealAmount; }
 
     virtual void ActivateItem(AActor* Activator) override;
-
-
 };

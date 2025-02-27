@@ -19,6 +19,25 @@ public:
 	ANXPlayerCharacter();
 
 	void OnCheckHit();
+//숩
+	// 현재 체력
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health;
+
+	// 최대 체력
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float MaxHealth;
+	
+	// NXPlayerCharacter.h
+	UFUNCTION(BlueprintPure, Category = "Health")
+	virtual float GetHealth() const; // override 키워드 추가
+
+	virtual void AddHealth(float Amount) override; // UFUNCTION() 제거하고 override 추가
+
+
+
+
+//숩
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void OnDeath();
@@ -62,10 +81,14 @@ protected:
 	bool bIsCrouching;
 	bool bIsAttacking;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxHealth;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float Health;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	//float MaxHealth;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
+	//float Health;
+
+// 'override' 키워드 제거
+	//UFUNCTION(BlueprintPure, Category = "Health")
+	//int32 GetHealth() const; // 기본 클래스에서 GetHealth가 없으므로 'override' 제거//숩
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

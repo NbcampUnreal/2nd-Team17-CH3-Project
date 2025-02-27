@@ -14,7 +14,12 @@ class NXPROJECT_API ANXCharacterBase : public ACharacter
 public:
 	ANXCharacterBase();
 
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	virtual void AddHealth(float Amount);
+
 protected:
+
+	
 
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -379,17 +379,37 @@ void ANXPlayerCharacter::OnCheckHit()
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
-			ANXZombieCharacter* Zombie = Cast<ANXZombieCharacter>(HitActor);
-			if (Zombie)
+			ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(HitActor);
+			if (NPC)
 			{
 				FDamageEvent DamageEvent;
-				Zombie->TakeDamage(20.0f, DamageEvent, GetController(), this);
+				NPC->TakeDamage(20.0f, DamageEvent, GetController(), this);
 				UE_LOG(LogTemp, Warning, TEXT("Hit Zombie!"));
 			}
 		}
 	}
 }
 
+//¼ü
+float ANXPlayerCharacter::GetHealth() const
+{
+	return Health;
+}
+
+void ANXPlayerCharacter::AddHealth(float Amount)
+{
+	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Log, TEXT("Health increased to: %f"), Health);
+
+
+}
+
+void ANXPlayerCharacter::OnDeath()
+{
+	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
+
+}
+//¼ü
 
 float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -410,10 +430,6 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	return ActualDamage;
 }
 
-void ANXPlayerCharacter::OnDeath()
-{
-	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
-}
 
 void ANXPlayerCharacter::EquipWepon()
 {
