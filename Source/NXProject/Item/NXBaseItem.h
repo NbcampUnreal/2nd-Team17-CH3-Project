@@ -16,6 +16,9 @@ public:
 	ANXBaseItem();
 
 protected:
+
+	virtual void BeginPlay() override;
+
 	//컴포넌트별 리플렉션
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;
@@ -27,7 +30,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Item|Component")
 	UStaticMeshComponent* StaticMesh;
 
+
 	//액터에 진입했을 때(오버랩)
+	UFUNCTION()
 	virtual void OnItemOverlap(
 		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
@@ -36,6 +41,7 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult) override;
 	//액터 진입 이후(오버랩 이후)
+	UFUNCTION()
 	virtual void OnItemEndOverlap(
 		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,

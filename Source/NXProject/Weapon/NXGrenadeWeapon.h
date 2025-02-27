@@ -12,6 +12,7 @@ class NXPROJECT_API ANXGrenadeWeapon : public AActor
 	
 public:	
 	ANXGrenadeWeapon();
+
 	virtual void Tick(float DeltaTime) override;
 	void Initialize(float Damage, float FuseTime); //수류탄 데미지와 폭발 시간
 

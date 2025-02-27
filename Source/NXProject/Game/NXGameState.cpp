@@ -40,16 +40,10 @@ void ANXGameState::AddScore(int32 Amount)
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Score: %d"), Score));
 }
 
-
-//startLevel
-//StartWave
 ////코인스폰대신 좀비로 킬드좀비카운트=0 // 
 ////한 웨이브에서 스폰할 좀비 개수 
 ////스폰볼륨을 이용해서 좀비 스폰
-////
-//
-//endWave
-////다음 웨이브 진행
+
 
 
 

@@ -22,11 +22,17 @@ ANXBaseItem::ANXBaseItem()
     StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
     StaticMesh->SetupAttachment(Collision);
 
+    
+}
+void ANXBaseItem::BeginPlay()
+{
+    Super::BeginPlay();
+
     // Overlap 이벤트 바인딩
     Collision->OnComponentBeginOverlap.AddDynamic(this, &ANXBaseItem::OnItemOverlap);
     Collision->OnComponentEndOverlap.AddDynamic(this, &ANXBaseItem::OnItemEndOverlap);
-}
 
+}
 
 void ANXBaseItem::OnItemOverlap(
     UPrimitiveComponent* OverlappedComp,
@@ -36,6 +42,8 @@ void ANXBaseItem::OnItemOverlap(
     bool bFromSweep,
     const FHitResult& SweepResult)
 {
+    UE_LOG(LogTemp, Warning, TEXT("오예잇"));
+
     if (OtherActor && OtherActor->ActorHasTag("Player"))
     {
         GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!!!")));

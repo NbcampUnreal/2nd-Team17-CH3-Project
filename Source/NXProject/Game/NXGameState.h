@@ -13,7 +13,18 @@ class NXPROJECT_API ANXGameState : public AGameState
 public:
 	ANXGameState();
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Score")
+//	void OnZombieKilled(); //좀비 처치 시 호출될 함수
+//
+//	void SpawnPortal(); //포탈 스폰 함수
+//
+//protected:
+//	virtual void BeginPlay() override;
+//
+//private:
+//
+//	int32 ZombiesKilled; //현재 킬 카운트
+
+UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Score")
 	int32 Score;
 
 	//virtual void BeginPlay() override;
