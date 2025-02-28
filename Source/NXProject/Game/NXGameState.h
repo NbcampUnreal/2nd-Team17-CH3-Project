@@ -23,18 +23,18 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Score")
 	void AddScore(int32 Amount);// 점수 추가
 
-	//void SpawnPortal();//포탈 스폰
+	void SpawnPortal();//포탈 스폰
 
-//protected:
-//	virtual void BeginPlay() override;
-//
-//private:
-	//int32 RequiredScoreToSpawnPortal; // 포탈 생성에 필요한 킬 카운트
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Portal")
-	//TSubclassOf<class APortalActor> PortalClass; // 스폰할 포탈 액터 클래스 //블프가능
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Portal")
+	TSubclassOf<class APortalActor> PortalClass; // 스폰할 포탈 액터 클래스 //블프가능
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Portal")
-	//FVector PortalSpawnLocation; // 포탈 스폰 위치
+
+private:
+	int32 RequiredScoreToSpawnPortal; // 포탈 생성에 필요한 킬 카운트
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Portal")
+	FVector PortalSpawnLocation; // 포탈 스폰 위치
 
 };
