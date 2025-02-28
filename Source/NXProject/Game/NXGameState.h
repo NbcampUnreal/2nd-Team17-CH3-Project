@@ -13,24 +13,28 @@ class NXPROJECT_API ANXGameState : public AGameState
 public:
 	ANXGameState();
 
-//	void OnZombieKilled(); //좀비 처치 시 호출될 함수
-//
-//	void SpawnPortal(); //포탈 스폰 함수
-//
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Score")
+	int32 Score;// 전역 점수 저장
+
+	//virtual void BeginPlay() override;
+	UFUNCTION(BlueprintPure, Category = "Score")
+	int32 GetScore()const;//현재 점수 읽기
+
+	UFUNCTION(BlueprintCallable,Category = "Score")
+	void AddScore(int32 Amount);// 점수 추가
+
+	//void SpawnPortal();//포탈 스폰
+
 //protected:
 //	virtual void BeginPlay() override;
 //
 //private:
-//
-//	int32 ZombiesKilled; //현재 킬 카운트
+	//int32 RequiredScoreToSpawnPortal; // 포탈 생성에 필요한 킬 카운트
 
-UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Score")
-	int32 Score;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Portal")
+	//TSubclassOf<class APortalActor> PortalClass; // 스폰할 포탈 액터 클래스 //블프가능
 
-	//virtual void BeginPlay() override;
-	UFUNCTION(BlueprintPure, Category = "Score")
-	int32 GetScore()const;
-	UFUNCTION(BlueprintCallable,Category = "Score")
-	void AddScore(int32 Amount);
+	//UPROPERTY(EditDefaultsOnly, Category = "Portal")
+	//FVector PortalSpawnLocation; // 포탈 스폰 위치
 
 };
