@@ -7,13 +7,13 @@
 #include "BTTask_BossJumpAttack.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class NXPROJECT_API UBTTask_BossJumpAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
 public:
 	UBTTask_BossJumpAttack();
 

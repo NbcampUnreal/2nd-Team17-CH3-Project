@@ -6,17 +6,19 @@
 #include "AI/NXNonPlayerCharacter.h"
 #include "NXBossZombie.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class NXPROJECT_API ANXBossZombie : public ANXNonPlayerCharacter
 {
 	GENERATED_BODY()
 public:
 	ANXBossZombie();
-private:
+	UFUNCTION()
+	virtual void Landed(const FHitResult& Hit) override;
 	bool bIsJumpAttacking = false;
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")
 	float JumpAttackRadius = 300.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")
 	float JumpAttackDamage = 50.f;
 };

@@ -330,7 +330,7 @@ void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 	//이인화 : NPC 피격 및 사망 처리를 확인하기 위한 코드 삭제 가능--------------
 	MeleeAttack();
 	//-------------
-	OnCheckHit();
+	/*OnCheckHit();*/
 	bIsAttacking = true;
 	
 }
@@ -362,33 +362,33 @@ void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
 	}
 }
 
-void ANXPlayerCharacter::OnCheckHit()
-{
-	FVector StartLocation = GetActorLocation();
-	FVector ForwardVector = GetActorForwardVector();
-	FVector EndLocation = StartLocation + (ForwardVector * 200.0f);
-
-	FHitResult HitResult;
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Pawn, QueryParams);
-
-	if (bHit)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor)
-		{
-			ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(HitActor);
-			if (NPC)
-			{
-				FDamageEvent DamageEvent;
-				NPC->TakeDamage(20.0f, DamageEvent, GetController(), this);
-				UE_LOG(LogTemp, Warning, TEXT("Hit Zombie!"));
-			}
-		}
-	}
-}
+//void ANXPlayerCharacter::OnCheckHit()
+//{
+//	FVector StartLocation = GetActorLocation();
+//	FVector ForwardVector = GetActorForwardVector();
+//	FVector EndLocation = StartLocation + (ForwardVector * 200.0f);
+//
+//	FHitResult HitResult;
+//	FCollisionQueryParams QueryParams;
+//	QueryParams.AddIgnoredActor(this);
+//
+//	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Pawn, QueryParams);
+//
+//	if (bHit)
+//	{
+//		AActor* HitActor = HitResult.GetActor();
+//		if (HitActor)
+//		{
+//			ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(HitActor);
+//			if (NPC)
+//			{
+//				FDamageEvent DamageEvent;
+//				NPC->TakeDamage(20.0f, DamageEvent, GetController(), this);
+//				UE_LOG(LogTemp, Warning, TEXT("Hit Zombie!"));
+//			}
+//		}
+//	}
+//}
 
 //숩
 float ANXPlayerCharacter::GetHealth() const

@@ -3,7 +3,7 @@
 
 ANXCharacterBase::ANXCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ANXCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

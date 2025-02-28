@@ -18,7 +18,7 @@ class NXPROJECT_API ANXPlayerCharacter : public ANXCharacterBase
 public:
 	ANXPlayerCharacter();
 
-	void OnCheckHit();
+	/*void OnCheckHit();*/
 //숩
 	// 현재 체력
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")

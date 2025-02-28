@@ -23,7 +23,7 @@ EBTNodeResult::Type UBTTask_BossJumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 	if (!AICharacter)return EBTNodeResult::Failed;
 
 	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if(!Player) return EBTNodeResult::Failed;
+	if (!Player) return EBTNodeResult::Failed;
 
 	FVector PlayerLocation = Player->GetActorLocation();
 	FVector MyLocation = AICharacter->GetActorLocation();
@@ -33,6 +33,8 @@ EBTNodeResult::Type UBTTask_BossJumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 
 	FVector LaunchVelocity = (TargetLocation - MyLocation).GetSafeNormal() * 1000.0f;
 	LaunchVelocity.Z = 800.0f;
+
+	AICharacter->bIsJumpAttacking = true;
 
 	AICharacter->LaunchCharacter(LaunchVelocity, true, true);
 
