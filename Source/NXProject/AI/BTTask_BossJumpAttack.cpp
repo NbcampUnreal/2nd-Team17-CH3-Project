@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_BossJumpAttack::UBTTask_BossJumpAttack()
 {
@@ -16,28 +17,50 @@ EBTNodeResult::Type UBTTask_BossJumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	ANXAIController* AIcontroller = Cast<ANXAIController>(OwnerComp.GetAIOwner());
-	if (!AIcontroller) return EBTNodeResult::Failed;
+	ANXAIController* AIController = Cast<ANXAIController>(OwnerComp.GetAIOwner());
+	if (!AIController) return EBTNodeResult::Failed;
 
-	ANXBossZombie* AICharacter = Cast< ANXBossZombie>(AIcontroller->GetPawn());
+	ANXBossZombie* AICharacter = Cast< ANXBossZombie>(AIController->GetPawn());
 	if (!AICharacter)return EBTNodeResult::Failed;
 
 	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (!Player) return EBTNodeResult::Failed;
 
+	AICharacter->GetCharacterMovement()->StopMovementImmediately();
+
 	FVector PlayerLocation = Player->GetActorLocation();
 	FVector MyLocation = AICharacter->GetActorLocation();
 
-	FVector TargetLocation = PlayerLocation + Player->GetActorForwardVector() * 100.f;
+	FVector Direction = (PlayerLocation - MyLocation).GetSafeNormal();
+	float Distance = FVector::Dist(PlayerLocation, MyLocation);
+
+	FVector TargetLocation = PlayerLocation - Direction * FMath::Clamp(Distance * 0.3f, 100.0f, 300.0f);
 	TargetLocation.Z += 50.0f;
 
-	FVector LaunchVelocity = (TargetLocation - MyLocation).GetSafeNormal() * 1000.0f;
-	LaunchVelocity.Z = 800.0f;
+	FVector LaunchVelocity = Direction * FMath::Clamp(Distance * 5.0f, 1200.0f, 1800.0f);
+	LaunchVelocity.Z = 900.0f;
 
 	AICharacter->bIsJumpAttacking = true;
 
+	AICharacter->GetCharacterMovement()->GravityScale = 2.0f;
+
 	AICharacter->LaunchCharacter(LaunchVelocity, true, true);
 
+	AIController->GetBlackboardComponent()->SetValueAsBool("CanJumpAttack", false);
+
+	FTimerHandle CoolDownTimer;
+	AICharacter->GetWorldTimerManager().SetTimer(
+		CoolDownTimer,
+		FTimerDelegate::CreateLambda([AIController]()
+			{
+				if (AIController)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsBool("CanJumpAttack", true);
+				}
+			}),
+		5.0f,
+		false
+	);
 
 	return EBTNodeResult::Succeeded;
 }

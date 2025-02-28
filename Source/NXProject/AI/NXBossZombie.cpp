@@ -6,6 +6,7 @@
 #include "Player/NXPlayerCharacter.h"
 #include "Engine/OverlapResult.h"
 #include "Engine/DamageEvents.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ANXBossZombie::ANXBossZombie()
 {
@@ -44,18 +45,15 @@ void ANXBossZombie::Landed(const FHitResult& Hit)
 			{
 				PlayerCharacter->TakeDamage(JumpAttackDamage, FDamageEvent(), OwnerController, this);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-				}
+				DrawDebugSphere(GetWorld(), AttackLocation, JumpAttackRadius, 16, FColor::Green, false, 2.f);
 			}
 		}
 	}
 	else
 	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
+		DrawDebugSphere(GetWorld(), AttackLocation, JumpAttackRadius, 16, FColor::Red, false, 2.f);
 	}
 
 	bIsJumpAttacking = false;
+	GetCharacterMovement()->GravityScale = 1.0f;
 }

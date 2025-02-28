@@ -39,7 +39,7 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
+				DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 2.f);
 				if (GEngine)
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
@@ -49,7 +49,7 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit()
 	}
 	else 
 	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
+		DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 2.f);
 	}
 }
 
@@ -84,7 +84,7 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit2()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Green, false, 5.f);
+				DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Green, false, 2.f);
 				if (GEngine)
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
@@ -94,7 +94,7 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit2()
 	}
 	else
 	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Red, false, 5.f);
+		DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Red, false, 2.f);
 	}
 }
 
@@ -130,7 +130,7 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit3()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Green, false, 5.f);
+				DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Green, false, 2.f);
 				if (GEngine)
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
@@ -140,6 +140,6 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit3()
 	}
 	else
 	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Red, false, 5.f);
+		DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Red, false, 2.f);
 	}
 }
