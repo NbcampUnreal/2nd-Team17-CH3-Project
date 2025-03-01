@@ -44,7 +44,19 @@ EBTNodeResult::Type UBTTask_BossJumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 
 	AICharacter->GetCharacterMovement()->GravityScale = 2.0f;
 
-	AICharacter->LaunchCharacter(LaunchVelocity, true, true);
+	FTimerHandle JumpDelayTimer;
+	AICharacter->GetWorldTimerManager().SetTimer(
+		JumpDelayTimer,
+		FTimerDelegate::CreateLambda([AICharacter, LaunchVelocity]()
+			{
+				if (AICharacter)
+				{
+					AICharacter->LaunchCharacter(LaunchVelocity, true, true);
+				}
+			}),
+		0.5f,
+		false
+	);
 
 	AIController->GetBlackboardComponent()->SetValueAsBool("CanJumpAttack", false);
 
@@ -58,7 +70,7 @@ EBTNodeResult::Type UBTTask_BossJumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 					AIController->GetBlackboardComponent()->SetValueAsBool("CanJumpAttack", true);
 				}
 			}),
-		5.0f,
+		6.0f,
 		false
 	);
 

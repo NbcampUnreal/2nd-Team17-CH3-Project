@@ -15,10 +15,27 @@ public:
 	ANXBossZombie();
 	UFUNCTION()
 	virtual void Landed(const FHitResult& Hit) override;
+	UFUNCTION()
+	void DashAttack();
+	UFUNCTION()
+	void StopDash();
+	UFUNCTION()
+	void OnDashHit();
+
 	bool bIsJumpAttacking = false;
+	bool bIsDashAttacking = false;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "DashAttack")
+	FVector DashDirection;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")
 	float JumpAttackRadius = 300.f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")
 	float JumpAttackDamage = 50.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")
+	float DashAttackDamage = 30.f;
+
+	FTimerHandle DashHitTimer;
+	FTimerHandle DashEndTimer;
 };

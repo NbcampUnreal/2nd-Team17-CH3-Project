@@ -20,6 +20,10 @@ protected:
 	void AnimNotify_CheckHit2();
 	UFUNCTION()
 	void AnimNotify_CheckHit3();
+	UFUNCTION()
+	void AnimNotify_CheckHit4();
+	UFUNCTION()
+	void AnimNotify_CheckHit5();
 public:
 	FOnCheckHit OnCheckHit;
 

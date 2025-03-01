@@ -34,18 +34,51 @@ void UBTService_UpdateAttackState::TickNode(UBehaviorTreeComponent& OwnerComp, u
     bool bCanJumpAttack = BlackboardComp->GetValueAsBool("CanJumpAttack");
     bool bCanDashAttack = BlackboardComp->GetValueAsBool("CanDashAttack");
     bool bCanMeleeAttack = BlackboardComp->GetValueAsBool("CanMeleeAttack");
-    
+    bool bCanThrowAttack = BlackboardComp->GetValueAsBool("CanThrowAttack");
 
-    if (Distance >= 1200.0f && Distance <= 1500.0f && bCanJumpAttack)
+    bool bInMeleeRange = BlackboardComp->GetValueAsBool("InMeleeRange");
+    bool bInMiddleRange = BlackboardComp->GetValueAsBool("InMiddleRange");
+    bool bInLongRange = BlackboardComp->GetValueAsBool("InLongRange");
+
+    if (Distance >= 1200.0f && Distance <= 1500.0f)
+    {
+        bInLongRange = true;
+    }
+    else
+    {
+        bInLongRange = false;
+    }
+
+    if (Distance >= 500.0f && Distance <= 1000.0f)
+    {
+        bInMiddleRange = true;
+    }
+    else
+    {
+        bInMiddleRange = false;
+    }
+
+    if (Distance <= 150.0f && bCanMeleeAttack)
+    {
+        bInMeleeRange = true;
+    }
+    else
+    {
+        bInMeleeRange = false;
+    }
+
+    if (bInLongRange && bCanJumpAttack)
     {
         BlackboardComp->SetValueAsBool("DoJumpAttack", true);
+        BlackboardComp->SetValueAsBool("DoThrowAttack", true);
     }
     else
     {
         BlackboardComp->SetValueAsBool("DoJumpAttack", false);
+        BlackboardComp->SetValueAsBool("DoThrowAttack", false);
     }
 
-    if (Distance >= 500.0f && Distance <= 1000.0f && bCanDashAttack)
+    if (bInMiddleRange && bCanDashAttack)
     {
         BlackboardComp->SetValueAsBool("DoDashAttack", true);
     }
@@ -54,7 +87,7 @@ void UBTService_UpdateAttackState::TickNode(UBehaviorTreeComponent& OwnerComp, u
         BlackboardComp->SetValueAsBool("DoDashAttack", false);
     }
 
-    if (Distance <= 150.0f && bCanMeleeAttack)
+    if (bInMeleeRange)
     {
         BlackboardComp->SetValueAsBool("DoMeleeAttack", true);
     }

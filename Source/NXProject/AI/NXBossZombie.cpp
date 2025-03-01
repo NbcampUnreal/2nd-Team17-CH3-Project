@@ -57,3 +57,69 @@ void ANXBossZombie::Landed(const FHitResult& Hit)
 	bIsJumpAttacking = false;
 	GetCharacterMovement()->GravityScale = 1.0f;
 }
+
+void ANXBossZombie::DashAttack()
+{
+	GetWorldTimerManager().SetTimer(
+		DashHitTimer,
+		this,
+		&ANXBossZombie::OnDashHit,
+		0.2f,
+		true
+	);
+
+	GetWorldTimerManager().SetTimer(
+		DashEndTimer,
+		this,
+		&ANXBossZombie::StopDash,
+		0.6f,
+		false
+	);
+}
+
+
+void ANXBossZombie::StopDash()
+{
+	bIsDashAttacking = false;
+
+	GetWorldTimerManager().ClearTimer(DashHitTimer);
+}
+
+void ANXBossZombie::OnDashHit()
+{
+	if (!GetWorld()) return;
+
+	FVector Center = GetActorLocation();
+	float Radius = 200.0f;
+	AController* OwnerController = GetController();
+
+	TArray<FHitResult> HitResults;
+	FCollisionShape CollisionShape = FCollisionShape::MakeSphere(Radius);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		Center,
+		Center,
+		FQuat::Identity,
+		ECC_Pawn,
+		CollisionShape,
+		QueryParams
+	);
+
+	if (bHit)
+	{
+		for (FHitResult Hit : HitResults)
+		{
+			ANXPlayerCharacter* PlayerCharacter = Cast<ANXPlayerCharacter>(Hit.GetActor());
+			if (PlayerCharacter)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Dash hit player: %s"), *PlayerCharacter->GetName());
+				PlayerCharacter->TakeDamage(DashAttackDamage, FDamageEvent(), OwnerController, this);
+			}
+		}
+	}
+
+}
