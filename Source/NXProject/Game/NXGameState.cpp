@@ -1,14 +1,13 @@
 #include "Game/NXGameState.h"
-#include "Player/NXPlayerController.h"
-#include "Components/TextBlock.h"
-#include "Game/NXGameInstance.h"
 #include "Game/PortalActor.h"
 #include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
 
 ANXGameState::ANXGameState()
 {
     Score = 0;
-    RequiredScoreToSpawnPortal = 10; // 10마리 처치 시 포탈 생성
+    RequiredScoreToActivatePortal = 2; // 2킬 시 포탈 작동
+    PortalActor = nullptr; // 초기화
 }
 
 int32 ANXGameState::GetScore() const
@@ -19,21 +18,33 @@ int32 ANXGameState::GetScore() const
 void ANXGameState::AddScore(int32 Amount)
 {
     Score += Amount;
+
+    // 점수를 화면에 표시
     GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Score: %d"), Score));
 
-    if (Score >= RequiredScoreToSpawnPortal) // 10킬 이상일 때
+    // 포탈 이펙트 활성화 조건 확인
+    if (Score >= RequiredScoreToActivatePortal && PortalActor)
     {
-        if (PortalClass)
-        {
-            FVector SpawnLocation = FVector(0.f, 0.f, 100.f); // 포탈 위치 설정
-            FRotator PortalRotation = FRotator::ZeroRotator;
-
-            GetWorld()->SpawnActor<AActor>(PortalClass, SpawnLocation, PortalRotation);
-            UE_LOG(LogTemp, Log, TEXT("포탈이 생성되었습니다!뽀쓔 무찌르러 가쟛!"));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("PortalClass가 설정되지 않았습니다!"));
-        }
+        ActivatePortalEffect(); // 포탈 이펙트 즉시 활성화
     }
+}
+
+void ANXGameState::ActivatePortalEffect()
+{
+    if (PortalActor)
+    {
+        UE_LOG(LogTemp, Log, TEXT("포탈"));
+        PortalActor->ActivateEffect(); // 포탈 이펙트 활성화
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PortalActor가 초기화되지 않았습니다!"));
+    }
+}
+
+// PortalActor 초기화
+void ANXGameState::InitializePortalActor(APortalActor* Portal)
+{
+    PortalActor = Portal;
+    UE_LOG(LogTemp, Log, TEXT("PortalActor가 초기화되었습니다."));
 }

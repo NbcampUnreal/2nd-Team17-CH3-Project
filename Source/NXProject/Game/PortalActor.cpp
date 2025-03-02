@@ -1,32 +1,52 @@
 #include "Game/PortalActor.h"
 #include "Components/BoxComponent.h"
 #include "Player/NXPlayerCharacter.h"
-#include "Particles/ParticleSystemComponent.h" // 파티클 시스템 컴포넌트를 사용하기 위한 헤더
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Game/NXGameState.h"
 
 // 생성자: 액터가 생성될 때 호출됨
 APortalActor::APortalActor()
 {
-    // 액터가 매 프레임 Tick 함수를 호출할 수 있도록 설정
     PrimaryActorTick.bCanEverTick = true;
 
     // 트리거 박스 컴포넌트 생성 및 설정
     TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
-    RootComponent = TriggerBox; // 트리거 박스를 루트 컴포넌트로 설정
-  
-    TriggerBox->SetCollisionProfileName(TEXT("Trigger")); // 충돌 프로필 설정
-    // 트리거 박스에 다른 액터가 겹칠 때 호출될 함수 바인딩
-    TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APortalActor::OnOverlapBegin);
+    RootComponent = TriggerBox;
+
+    TriggerBox->SetCollisionProfileName(TEXT("Trigger"));
+    TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APortalActor::OnOverlapBegin); // 오버랩 이벤트 추가
 
     // 파티클 시스템 컴포넌트 초기화
     PortalEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("PortalEffect"));
-    PortalEffect->SetupAttachment(RootComponent); // 루트 컴포넌트에 부착
+    PortalEffect->SetupAttachment(RootComponent);
+
+    // 초기화: 포탈은 비활성화 상태로 시작
+    bIsPortalActive = false;
 }
 
 // 게임 시작 시 호출되는 함수
 void APortalActor::BeginPlay()
 {
     Super::BeginPlay();
+    // GameState 가져오기
+    ANXGameState* GameState = Cast<ANXGameState>(GetWorld()->GetGameState());
+    if (GameState)
+    {
+        GameState->InitializePortalActor(this); // PortalActor 초기화
+        UE_LOG(LogTemp, Log, TEXT("PortalActor가 GameState에 등록되었습니다."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("GameState를 찾을 수 없습니다!"));
+    }
+
+    if (PortalEffect)
+    {
+        PortalEffect->Deactivate(); // 시작 시 이펙트 비활성화
+    }
 }
+
 
 // 매 프레임 호출되는 함수
 void APortalActor::Tick(float DeltaTime)
@@ -34,20 +54,66 @@ void APortalActor::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-// 트리거 박스에 다른 액터가 겹칠 때 호출되는 함수
-void APortalActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
-    AActor* OtherActor, 
-    UPrimitiveComponent* OtherComp, 
-    int32 OtherBodyIndex, 
-    bool bFromSweep, 
-    const FHitResult& SweepResult)
+// 포탈 이펙트를 즉시 활성화하는 함수
+void APortalActor::ActivateEffect()
 {
-    // 겹친 액터가 플레이어 캐릭터인지 확인
-    ANXPlayerCharacter* Character = Cast<ANXPlayerCharacter>(OtherActor);
-    if (Character)
+    if (PortalEffect)
     {
-        // 플레이어 캐릭터를 지정된 목적지 위치로 이동
-        Character->SetActorLocation(DestinationLocation);
+        PortalEffect->Activate(); // 이펙트 활성화
+        bIsPortalActive = true; // 포탈 활성화 상태로 변경
+        UE_LOG(LogTemp, Log, TEXT("포탈 이펙트가 활성화되었습니다!"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("포탈 이펙트가 없습니다!"));
     }
 }
 
+// 포탈 활성화 상태를 설정하는 함수
+void APortalActor::SetPortalActive(bool bActive)
+{
+    bIsPortalActive = bActive;
+    if (bActive)
+    {
+        ActivateEffect(); // 포탈 활성화 시 이펙트 재생
+    }
+    else
+    {
+        if (PortalEffect)
+        {
+            PortalEffect->Deactivate(); // 포탈 비활성화 시 이펙트 중지
+        }
+    }
+}
+
+// 포탈 활성화 상태를 확인하는 함수
+bool APortalActor::IsPortalActive() const
+{
+    return bIsPortalActive;
+}
+
+// 오버랩 이벤트 함수
+void APortalActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32 OtherBodyIndex,
+    bool bFromSweep,
+    const FHitResult& SweepResult)
+{
+    ANXPlayerCharacter* Character = Cast<ANXPlayerCharacter>(OtherActor);
+    if (Character)
+    {
+        // GameState 가져오기
+        ANXGameState* GameState = Cast<ANXGameState>(GetWorld()->GetGameState());
+        if (GameState && bIsPortalActive && GameState->GetScore() >= 2)
+        {
+            // 캐릭터를 지정된 목적지 위치로 이동
+            Character->SetActorLocation(DestinationLocation); // 포탈 이동
+            UE_LOG(LogTemp, Log, TEXT("캐릭터가 포탈을 통해 이동했습니다."));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("캐릭터가 포탈을 사용할 수 없습니다. 킬 수가 부족하거나 포탈이 비활성화 상태입니다."));
+        }
+    }
+}

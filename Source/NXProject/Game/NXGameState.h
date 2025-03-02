@@ -4,37 +4,32 @@
 #include "GameFramework/GameState.h"
 #include "NXGameState.generated.h"
 
+class APortalActor; // 전방 선언
+
 UCLASS()
-class NXPROJECT_API ANXGameState : public AGameState
+class NXPROJECT_API ANXGameState : public AGameStateBase
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
 
 public:
-	ANXGameState();
+    ANXGameState();
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Score")
-	int32 Score;// 전역 점수 저장
+    // 점수를 가져오는 함수
+    int32 GetScore() const;
 
-	//virtual void BeginPlay() override;
-	UFUNCTION(BlueprintPure, Category = "Score")
-	int32 GetScore()const;//현재 점수 읽기
+    // 점수를 추가하는 함수
+    void AddScore(int32 Amount);
 
-	UFUNCTION(BlueprintCallable,Category = "Score")
-	void AddScore(int32 Amount);// 점수 추가
+    // 포탈 이펙트를 활성화하는 함수
+    void ActivatePortalEffect();
 
-	void SpawnPortal();//포탈 스폰
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Portal")
-	TSubclassOf<class APortalActor> PortalClass; // 스폰할 포탈 액터 클래스 //블프가능
-
+    // PortalActor를 초기화하는 함수
+    void InitializePortalActor(APortalActor* Portal);
 
 private:
-	int32 RequiredScoreToSpawnPortal; // 포탈 생성에 필요한 킬 카운트
+    int32 Score; // 현재 점수
+    int32 RequiredScoreToActivatePortal; // 포탈 활성화에 필요한 점수
 
-
-	UPROPERTY(EditDefaultsOnly, Category = "Portal")
-	FVector PortalSpawnLocation; // 포탈 스폰 위치
-
+    UPROPERTY()
+    APortalActor* PortalActor; // 포탈 액터 참조
 };
