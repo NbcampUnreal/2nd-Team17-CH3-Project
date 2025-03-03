@@ -17,6 +17,7 @@
 //이인화 : 피격 확인을 위해 작성한 코드입니다 삭제하셔도 괜찮습니다 ------------
 #include "Engine/OverlapResult.h"
 //-----------------
+#include "Weapon/NXShotgun.h"
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
