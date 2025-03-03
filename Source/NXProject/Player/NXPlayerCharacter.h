@@ -134,5 +134,6 @@ private:
 	void InputQuickSlot01(const FInputActionValue& Value);
 	void InputQuickSlot02(const FInputActionValue& Value);
 
-
+	float CurrentCameraHeight;
+	float TargetCameraHeight;
 };
