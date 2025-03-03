@@ -33,10 +33,10 @@ public:
 	UInputAction* ReloadAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* DashAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> QuickSlot01;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> QuickSlot02;
+	TObjectPtr<UInputAction> QuickSlot02;*/
 
 	virtual void BeginPlay() override;
 	

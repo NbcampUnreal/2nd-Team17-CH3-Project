@@ -122,6 +122,7 @@ protected:
 	FTimerHandle CrouchTimerHandle;
 	FTimerHandle HitResetTimerHandle;
 	FTimerHandle DashCooldownTimerHandle;
+	FTimerHandle DashDodgeTimerHandle;
 	FTimerHandle FireCoolTimerHandle;
 	FTimerHandle ReloadTimerHandle;
 
@@ -151,24 +152,25 @@ protected:
 	void Reload();
 	UFUNCTION()
 	void EndReload();
-	UFUNCTION()
+	/*UFUNCTION()
 	void EquipWepon();
 	UFUNCTION()
-	void UnequipWeapon();
+	void UnequipWeapon();*/
 	UFUNCTION()
 	void Dash();
 	void ResetDash();
+	void EndDodge();
 
 	void ApplyCrouch();
 
 	void ApplyUnCrouch();
 	//이인화 : NPC 피격 및 사망 확인을 위한 코드 삭제해도 괜찮습니다-------------------
-	UFUNCTION()
-	void MeleeAttack();
+	/*UFUNCTION()
+	void MeleeAttack();*/
 	//--------------------
 private:
-	void InputQuickSlot01(const FInputActionValue& Value);
-	void InputQuickSlot02(const FInputActionValue& Value);
+	/*void InputQuickSlot01(const FInputActionValue& Value);
+	void InputQuickSlot02(const FInputActionValue& Value);*/
 
 	bool bIsHitted;
 	bool bIsDashing;

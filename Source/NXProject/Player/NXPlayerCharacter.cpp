@@ -50,6 +50,8 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
 
+
+
 	bIsAttacking = false;
 	bIsDashing = false;
 	bIsFire = false;
@@ -160,7 +162,7 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 				);
 			}
 
-			if (PlayerController->QuickSlot01)
+		/*	if (PlayerController->QuickSlot01)
 			{
 				EnhancedInput->BindAction(
 					PlayerController->QuickSlot01,
@@ -168,9 +170,9 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 					this,
 					&ANXPlayerCharacter::InputQuickSlot01
 				);
-			}
+			}*/
 
-			if (PlayerController->QuickSlot02)
+		/*	if (PlayerController->QuickSlot02)
 			{
 				EnhancedInput->BindAction(
 					PlayerController->QuickSlot02,
@@ -178,7 +180,7 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 					this,
 					&ANXPlayerCharacter::InputQuickSlot02
 				);
-			}
+			}*/
 			if (PlayerController->DashAction)
 			{
 				EnhancedInput->BindAction(
@@ -254,6 +256,7 @@ void ANXPlayerCharacter::StartJump(const FInputActionValue& Value)
 {
 	if (Value.Get<bool>())
 	{
+		if (bIsDashing) return;
 		Jump();
 	}
 }
@@ -391,27 +394,27 @@ void ANXPlayerCharacter::ResetFire()
 	bIsFire = false;
 }
 
-void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
-{
-	FName WeaponSocket(TEXT("WeaponSocket"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket) == true && IsValid(WeaponInstance) == false)
-	{
-		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-		if (IsValid(WeaponInstance) == true)
-		{
-			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-		}
-	}
-}
-
-void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
-{
-	if (IsValid(WeaponInstance) == true)
-	{
-		WeaponInstance->Destroy();
-		WeaponInstance = nullptr;
-	}
-}
+//void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
+//{
+//	FName WeaponSocket(TEXT("WeaponSocket"));
+//	if (GetMesh()->DoesSocketExist(WeaponSocket) == true && IsValid(WeaponInstance) == false)
+//	{
+//		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+//		if (IsValid(WeaponInstance) == true)
+//		{
+//			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+//		}
+//	}
+//}
+//
+//void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
+//{
+//	if (IsValid(WeaponInstance) == true)
+//	{
+//		WeaponInstance->Destroy();
+//		WeaponInstance = nullptr;
+//	}
+//}
 
 //숩
 float ANXPlayerCharacter::GetHealth() const
@@ -473,29 +476,29 @@ void ANXPlayerCharacter::ResetHit()
 }
 
 
-void ANXPlayerCharacter::EquipWepon()
-{
-	FName WeaponSocket(TEXT("WeaponSocket"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket) && !IsValid(WeaponInstance))
-	{
-		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-		if (IsValid(WeaponInstance))
-		{
-			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-			UE_LOG(LogTemp, Log, TEXT("Weapon Equipped"));
-		}
-	}
-}
-
-void ANXPlayerCharacter::UnequipWeapon()
-{
-	if (IsValid(WeaponInstance))
-	{
-		WeaponInstance->Destroy();
-		WeaponInstance = nullptr;
-		UE_LOG(LogTemp, Log, TEXT("Weapon Unequipped"));
-	}
-}
+//void ANXPlayerCharacter::EquipWepon()
+//{
+//	FName WeaponSocket(TEXT("WeaponSocket"));
+//	if (GetMesh()->DoesSocketExist(WeaponSocket) && !IsValid(WeaponInstance))
+//	{
+//		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+//		if (IsValid(WeaponInstance))
+//		{
+//			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+//			UE_LOG(LogTemp, Log, TEXT("Weapon Equipped"));
+//		}
+//	}
+//}
+//
+//void ANXPlayerCharacter::UnequipWeapon()
+//{
+//	if (IsValid(WeaponInstance))
+//	{
+//		WeaponInstance->Destroy();
+//		WeaponInstance = nullptr;
+//		UE_LOG(LogTemp, Log, TEXT("Weapon Unequipped"));
+//	}
+//}
 
 void ANXPlayerCharacter::Dash()
 {
@@ -535,6 +538,8 @@ void ANXPlayerCharacter::Dash()
 
 	DashVelocity.Z = DashHeight;
 	LaunchCharacter(DashVelocity, true, true);
+	bIsHitted = true;
+	GetWorldTimerManager().SetTimer(DashDodgeTimerHandle, this, &ANXPlayerCharacter::EndDodge, 0.4f, false);
 
 	bIsDashing = true;
 	GetWorldTimerManager().SetTimer(DashCooldownTimerHandle, this, &ANXPlayerCharacter::ResetDash, 1.0f, false);
@@ -545,7 +550,10 @@ void ANXPlayerCharacter::ResetDash()
 	bIsDashing = false;
 }
 
-
+void ANXPlayerCharacter::EndDodge()
+{
+	bIsHitted = false;
+}
 
 void ANXPlayerCharacter::Reload()
 {
@@ -583,54 +591,54 @@ void ANXPlayerCharacter::EndReload()
 	bIsReloading = false;
 }
 //이인화 : NPC 피격 확인을 위해 작성한 코드 삭제해도 괜찮습니다--------
-void ANXPlayerCharacter::MeleeAttack()
-{
-	if (bIsAttacking == true)
-	{
-		return;
-	}
-	if (bIsAttacking == false)
-	{
-		APawn* PawnOwner = this;
-		if (!PawnOwner)return;
-
-		FVector AttackLocation = PawnOwner->GetActorLocation() + PawnOwner->GetActorForwardVector() * 100.f;
-
-		TArray<FOverlapResult> OverlapResults;
-		FCollisionQueryParams CollisionQueryParams(NAME_None, false, PawnOwner);
-
-		bool bResult = GetWorld()->OverlapMultiByChannel(
-			OverlapResults,
-			AttackLocation,
-			FQuat::Identity,
-			ECollisionChannel::ECC_Pawn,
-			FCollisionShape::MakeSphere(30.f),
-			CollisionQueryParams
-		);
-		if (bResult == true)
-		{
-			AController* OwnerController = PawnOwner->GetController();
-			TSet<AActor*> HitPlayers;
-
-			for (auto const& OverlapResult : OverlapResults)
-			{
-				ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(OverlapResult.GetActor());
-				if (IsValid(NPC) && !HitPlayers.Contains(NPC))
-				{
-					NPC->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
-					HitPlayers.Add(NPC);
-					DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
-					if (GEngine)
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-					}
-				}
-			}
-		}
-		else
-		{
-			DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
-		}
-	}
-}
+//void ANXPlayerCharacter::MeleeAttack()
+//{
+//	if (bIsAttacking == true)
+//	{
+//		return;
+//	}
+//	if (bIsAttacking == false)
+//	{
+//		APawn* PawnOwner = this;
+//		if (!PawnOwner)return;
+//
+//		FVector AttackLocation = PawnOwner->GetActorLocation() + PawnOwner->GetActorForwardVector() * 100.f;
+//
+//		TArray<FOverlapResult> OverlapResults;
+//		FCollisionQueryParams CollisionQueryParams(NAME_None, false, PawnOwner);
+//
+//		bool bResult = GetWorld()->OverlapMultiByChannel(
+//			OverlapResults,
+//			AttackLocation,
+//			FQuat::Identity,
+//			ECollisionChannel::ECC_Pawn,
+//			FCollisionShape::MakeSphere(30.f),
+//			CollisionQueryParams
+//		);
+//		if (bResult == true)
+//		{
+//			AController* OwnerController = PawnOwner->GetController();
+//			TSet<AActor*> HitPlayers;
+//
+//			for (auto const& OverlapResult : OverlapResults)
+//			{
+//				ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(OverlapResult.GetActor());
+//				if (IsValid(NPC) && !HitPlayers.Contains(NPC))
+//				{
+//					NPC->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
+//					HitPlayers.Add(NPC);
+//					DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
+//					if (GEngine)
+//					{
+//						GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
+//					}
+//				}
+//			}
+//		}
+//		else
+//		{
+//			DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
+//		}
+//	}
+//}
 //-------------
