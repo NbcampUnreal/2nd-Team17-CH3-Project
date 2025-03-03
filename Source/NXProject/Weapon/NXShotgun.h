@@ -2,11 +2,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "NXProject/NXWeaponActor.h"
 #include "NXShotgun.generated.h"
 
 UCLASS()
-class NXPROJECT_API ANXShotgun : public AActor
+class NXPROJECT_API ANXShotgun : public ANXWeaponActor
 {
 	GENERATED_BODY()
 
@@ -14,12 +14,17 @@ public:
 	ANXShotgun();
 
 	void FireShotgun();
+	void Reloading();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	USkeletalMeshComponent* MeshComp;
 
-private:
 	UPROPERTY(EditDefaultsOnly, Category = "Shotgun")
 	int32 Bullet;
 	UPROPERTY(EditDefaultsOnly, Category = "Shotgun")
 	int32 MaxBullet;
+
+	int32 GetBullet();
+private:
 	UPROPERTY(EditDefaultsOnly, Category = "Shotgun")
 	int32 PelletCount;//»êÅº °¹¼ö
 	UPROPERTY(EditDefaultsOnly, Category = "Shotgun")

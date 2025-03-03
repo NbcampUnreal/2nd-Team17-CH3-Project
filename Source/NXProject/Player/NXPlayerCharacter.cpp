@@ -31,14 +31,14 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
 	CameraComp->bUsePawnControlRotation = false;
 
-	NormalSpeed = 800.0f;
-	WalkSpeedMultiplier = 0.6f;
+	NormalSpeed = 600.0f;
+	WalkSpeedMultiplier = 0.5f;
 	CrouchSpeedMultiplier = 0.4f;
 	WalkSpeed = NormalSpeed * WalkSpeedMultiplier;
 	CrouchSpeed = NormalSpeed * CrouchSpeedMultiplier;
 
-	DashSpeed = 800.0f	;
-	BackDashSpeed = 500.0f;
+	DashSpeed = 900.0f;
+	BackDashSpeed = 600.0f;
 	DashHeight = 250.0f;
 
 	CrouchTransitionSpeed = 2.0f;
@@ -52,7 +52,8 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 
 	bIsAttacking = false;
 	bIsDashing = false;
-	
+	bIsFire = false;
+
 }
 
 void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -141,12 +142,12 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 					&ANXPlayerCharacter::StartAttack
 				);
 
-				EnhancedInput->BindAction(
-					PlayerController->AttackAction,
-					ETriggerEvent::Completed,
-					this,
-					&ANXPlayerCharacter::StopAttack
-				);
+				//EnhancedInput->BindAction(
+				//	PlayerController->AttackAction,
+				//	ETriggerEvent::Completed,
+				//	this,
+				//	&ANXPlayerCharacter::StopAttack
+				//);
 			}
 
 			if (PlayerController->ReloadAction)
@@ -195,6 +196,17 @@ void ANXPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("HP : %f"), Health);
+	if (WeaponClass)
+	{
+		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass);
+		if (WeaponInstance)
+		{
+			WeaponInstance->AttachToComponent(GetMesh(),
+				FAttachmentTransformRules::SnapToTargetIncludingScale,
+				TEXT("WeaponSocket"));
+		}
+	}
+	WeaponInstance->SetOwner(this);
 }
 
 void ANXPlayerCharacter::Tick(float DeltaTime)
@@ -205,7 +217,7 @@ void ANXPlayerCharacter::Tick(float DeltaTime)
 	float CurrentCapsuleHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	float NewCapsuleHeight = FMath::FInterpTo(CurrentCapsuleHeight, TargetCapsuleHeight, DeltaTime, CrouchTransitionSpeed);
 	GetCapsuleComponent()->SetCapsuleHalfHeight(NewCapsuleHeight, true);
-	
+
 	/*float TargetCameraHeight = bIsCrouched ? 40.0f : 45.0f;
 	FVector NewCameraLocation = FMath::VInterpTo(
 		CameraComp->GetRelativeLocation(),
@@ -286,7 +298,7 @@ void ANXPlayerCharacter::StartCrouch(const FInputActionValue& Value)
 		Crouch();
 		bIsCrouching = true;
 	}
-		GetWorld()->GetTimerManager().SetTimer(CrouchTimerHandle, this, &ANXPlayerCharacter::ApplyCrouch, 0.05f, true);
+	GetWorld()->GetTimerManager().SetTimer(CrouchTimerHandle, this, &ANXPlayerCharacter::ApplyCrouch, 0.05f, true);
 }
 
 void ANXPlayerCharacter::StopCrouch(const FInputActionValue& Value)
@@ -296,7 +308,7 @@ void ANXPlayerCharacter::StopCrouch(const FInputActionValue& Value)
 		UnCrouch();
 		bIsCrouching = false;
 	}
-		GetWorld()->GetTimerManager().SetTimer(CrouchTimerHandle, this, &ANXPlayerCharacter::ApplyUnCrouch, 0.05f, true);
+	GetWorld()->GetTimerManager().SetTimer(CrouchTimerHandle, this, &ANXPlayerCharacter::ApplyUnCrouch, 0.05f, true);
 }
 
 void ANXPlayerCharacter::ApplyCrouch()
@@ -331,31 +343,52 @@ bool ANXPlayerCharacter::GetIsCrouching() const
 
 void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 {
-	if (GetCharacterMovement()->IsFalling() == true)
-	{
-		return;
-	}
+	if (bIsDashing) return;
 
-	if (!IsValid(WeaponInstance))
+	if (bIsFire)return;
+
+	if (WeaponInstance && WeaponInstance->IsA(ANXShotgun::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped!"));
-		return;
+		ANXShotgun* Shotgun = Cast<ANXShotgun>(WeaponInstance);
+
+		if (Shotgun && Shotgun->GetBullet() > 1)
+		{
+			if (GetMesh() && GetMesh()->GetAnimInstance())
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(PlayerFireAnimation, 1.f);
+			}
+
+			Shotgun->FireShotgun();
+			bIsFire = true;
+			GetWorldTimerManager().SetTimer(
+				FireCoolTimerHandle,
+				this,
+				&ANXPlayerCharacter::ResetFire,
+				0.5f,
+				false
+			);
+		}
+		else if (Shotgun && Shotgun->GetBullet() <= 1)
+		{
+			if (GetMesh() && GetMesh()->GetAnimInstance())
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(PlayerFireAnimation, 1.f);
+			}
+
+			Shotgun->FireShotgun();
+			Reload();
+		}
 	}
-	if (GetMesh() && GetMesh()->GetAnimInstance())
-	{
-		GetMesh()->GetAnimInstance()->Montage_Play(PlayerFireAnimation, 1.f);
-	}
-	//이인화 : NPC 피격 및 사망 처리를 확인하기 위한 코드 삭제 가능--------------
-	MeleeAttack();
-	//-------------
-	/*OnCheckHit();*/
-	bIsAttacking = true;
-	
 }
+//
+//void ANXPlayerCharacter::StopAttack(const FInputActionValue& Value)
+//{
+//
+//}
 
-void ANXPlayerCharacter::StopAttack(const FInputActionValue& Value)
+void ANXPlayerCharacter::ResetFire()
 {
-	bIsAttacking = false;
+	bIsFire = false;
 }
 
 void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
@@ -379,34 +412,6 @@ void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
 		WeaponInstance = nullptr;
 	}
 }
-
-//void ANXPlayerCharacter::OnCheckHit()
-//{
-//	FVector StartLocation = GetActorLocation();
-//	FVector ForwardVector = GetActorForwardVector();
-//	FVector EndLocation = StartLocation + (ForwardVector * 200.0f);
-//
-//	FHitResult HitResult;
-//	FCollisionQueryParams QueryParams;
-//	QueryParams.AddIgnoredActor(this);
-//
-//	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Pawn, QueryParams);
-//
-//	if (bHit)
-//	{
-//		AActor* HitActor = HitResult.GetActor();
-//		if (HitActor)
-//		{
-//			ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(HitActor);
-//			if (NPC)
-//			{
-//				FDamageEvent DamageEvent;
-//				NPC->TakeDamage(20.0f, DamageEvent, GetController(), this);
-//				UE_LOG(LogTemp, Warning, TEXT("Hit Zombie!"));
-//			}
-//		}
-//	}
-//}
 
 //숩
 float ANXPlayerCharacter::GetHealth() const
@@ -523,7 +528,7 @@ void ANXPlayerCharacter::Dash()
 		DashVelocity = -GetActorRightVector() * DashSpeed;
 	}
 
-	if(PlayerDashAnimation && GetMesh() && GetMesh()->GetAnimInstance())
+	if (PlayerDashAnimation && GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(PlayerDashAnimation, 1.f);
 	}
@@ -542,26 +547,49 @@ void ANXPlayerCharacter::ResetDash()
 
 
 
-void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
+void ANXPlayerCharacter::Reload()
 {
 	if (IsValid(WeaponInstance))
 	{
+		if (bIsReloading)return;
 		if (GetMesh() && GetMesh()->GetAnimInstance())
 		{
 			GetMesh()->GetAnimInstance()->Montage_Play(PlayerReloadAnimation, 1.f);
 		}
-		WeaponInstance->ReloadConfig();
-		UE_LOG(LogTemp, Log, TEXT("Weapon Reloaded"));
+		bIsFire = true;
+		GetWorldTimerManager().SetTimer(
+			FireCoolTimerHandle,
+			this,
+			&ANXPlayerCharacter::ResetFire,
+			3.0f,
+			false
+		);
+		bIsReloading = true;
+		GetWorldTimerManager().SetTimer(
+			ReloadTimerHandle,
+			this,
+			&ANXPlayerCharacter::EndReload,
+			3.0f,
+			false
+		);
+		if (WeaponInstance && WeaponInstance->IsA(ANXShotgun::StaticClass()))
+		{
+			Cast<ANXShotgun>(WeaponInstance)->Reloading();
+		}
 	}
+}
+void ANXPlayerCharacter::EndReload()
+{
+	bIsReloading = false;
 }
 //이인화 : NPC 피격 확인을 위해 작성한 코드 삭제해도 괜찮습니다--------
 void ANXPlayerCharacter::MeleeAttack()
 {
-	if (bIsAttacking==true)
+	if (bIsAttacking == true)
 	{
 		return;
 	}
-	if (bIsAttacking==false) 
+	if (bIsAttacking == false)
 	{
 		APawn* PawnOwner = this;
 		if (!PawnOwner)return;

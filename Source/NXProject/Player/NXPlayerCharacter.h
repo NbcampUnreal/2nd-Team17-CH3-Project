@@ -96,9 +96,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float CameraLerp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
 	TSubclassOf<ANXWeaponActor> WeaponClass;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
 	TObjectPtr<ANXWeaponActor> WeaponInstance;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -122,6 +122,8 @@ protected:
 	FTimerHandle CrouchTimerHandle;
 	FTimerHandle HitResetTimerHandle;
 	FTimerHandle DashCooldownTimerHandle;
+	FTimerHandle FireCoolTimerHandle;
+	FTimerHandle ReloadTimerHandle;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -141,10 +143,14 @@ protected:
 	void StopCrouch(const FInputActionValue& Value);
 	UFUNCTION()
 	void StartAttack(const FInputActionValue& Value);
+	/*UFUNCTION()
+	void StopAttack(const FInputActionValue& Value);*/
 	UFUNCTION()
-	void StopAttack(const FInputActionValue& Value);
+	void ResetFire();
 	UFUNCTION()
-	void Reload(const FInputActionValue& Value);
+	void Reload();
+	UFUNCTION()
+	void EndReload();
 	UFUNCTION()
 	void EquipWepon();
 	UFUNCTION()
@@ -166,4 +172,6 @@ private:
 
 	bool bIsHitted;
 	bool bIsDashing;
+	bool bIsFire;
+	bool bIsReloading;
 };
