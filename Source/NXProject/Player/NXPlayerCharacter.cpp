@@ -17,6 +17,7 @@
 //이인화 : 피격 확인을 위해 작성한 코드입니다 삭제하셔도 괜찮습니다 ------------
 #include "Engine/OverlapResult.h"
 //-----------------
+#include "Weapon/NXShotgun.h"
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,12 +31,17 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
 	CameraComp->bUsePawnControlRotation = false;
 
-	NormalSpeed = 600.0f;
-	SprintSpeedMultiplier = 1.5f;
-	CrouchSpeedMultiplier = 0.5f;
-	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+	NormalSpeed = 800.0f;
+	WalkSpeedMultiplier = 0.6f;
+	CrouchSpeedMultiplier = 0.4f;
+	WalkSpeed = NormalSpeed * WalkSpeedMultiplier;
 	CrouchSpeed = NormalSpeed * CrouchSpeedMultiplier;
-	CrouchTransitionSpeed = 10.0f;
+
+	DashSpeed = 800.0f	;
+	BackDashSpeed = 500.0f;
+	DashHeight = 250.0f;
+
+	CrouchTransitionSpeed = 2.0f;
 	CameraLerp = 0.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
@@ -45,8 +51,8 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	Health = MaxHealth;
 
 	bIsAttacking = false;
+	bIsDashing = false;
 	
-
 }
 
 void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -92,20 +98,20 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 				);
 			}
 
-			if (PlayerController->SprintAction)
+			if (PlayerController->WalkAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->SprintAction,
+					PlayerController->WalkAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ANXPlayerCharacter::StartSprint
+					&ANXPlayerCharacter::StartWalk
 				);
 
 				EnhancedInput->BindAction(
-					PlayerController->SprintAction,
+					PlayerController->WalkAction,
 					ETriggerEvent::Completed,
 					this,
-					&ANXPlayerCharacter::StopSprint
+					&ANXPlayerCharacter::StopWalk
 				);
 			}
 
@@ -172,6 +178,15 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 					&ANXPlayerCharacter::InputQuickSlot02
 				);
 			}
+			if (PlayerController->DashAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->DashAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ANXPlayerCharacter::Dash
+				);
+			}
 		}
 	}
 }
@@ -191,7 +206,7 @@ void ANXPlayerCharacter::Tick(float DeltaTime)
 	float NewCapsuleHeight = FMath::FInterpTo(CurrentCapsuleHeight, TargetCapsuleHeight, DeltaTime, CrouchTransitionSpeed);
 	GetCapsuleComponent()->SetCapsuleHalfHeight(NewCapsuleHeight, true);
 	
-	float TargetCameraHeight = bIsCrouched ? 40.0f : 45.0f;
+	/*float TargetCameraHeight = bIsCrouched ? 40.0f : 45.0f;
 	FVector NewCameraLocation = FMath::VInterpTo(
 		CameraComp->GetRelativeLocation(),
 		FVector(0, 0, TargetCameraHeight),
@@ -201,7 +216,7 @@ void ANXPlayerCharacter::Tick(float DeltaTime)
 	CameraComp->SetRelativeLocation(NewCameraLocation);
 
 	float TargetLerp = bIsCrouched ? 0.5f : 0.0f;
-	CameraLerp = FMath::FInterpTo(CameraLerp, TargetLerp, DeltaTime, 5.0f);
+	CameraLerp = FMath::FInterpTo(CameraLerp, TargetLerp, DeltaTime, 5.0f);*/
 
 }
 
@@ -248,15 +263,15 @@ void ANXPlayerCharacter::Look(const FInputActionValue& Value)
 
 }
 
-void ANXPlayerCharacter::StartSprint(const FInputActionValue& Value)
+void ANXPlayerCharacter::StartWalk(const FInputActionValue& Value)
 {
 	if (GetCharacterMovement())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	}
 }
 
-void ANXPlayerCharacter::StopSprint(const FInputActionValue& Value)
+void ANXPlayerCharacter::StopWalk(const FInputActionValue& Value)
 {
 	if (GetCharacterMovement())
 	{
@@ -326,7 +341,10 @@ void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped!"));
 		return;
 	}
-
+	if (GetMesh() && GetMesh()->GetAnimInstance())
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(PlayerFireAnimation, 1.f);
+	}
 	//이인화 : NPC 피격 및 사망 처리를 확인하기 위한 코드 삭제 가능--------------
 	MeleeAttack();
 	//-------------
@@ -406,6 +424,10 @@ void ANXPlayerCharacter::AddHealth(float Amount)
 
 void ANXPlayerCharacter::OnDeath()
 {
+	if (GetMesh() && GetMesh()->GetAnimInstance())
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(PlayerDeathAnimation, 1.f);
+	}
 	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
 
 }
@@ -413,7 +435,14 @@ void ANXPlayerCharacter::OnDeath()
 
 float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bIsHitted)return 0.0f;
+
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (GetMesh() && GetMesh()->GetAnimInstance())
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(PlayerHittedAnimation, 1.f);
+	}
 
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 
@@ -427,7 +456,15 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	{
 		OnDeath();
 	}
+	bIsHitted = true;
+
+	GetWorldTimerManager().SetTimer(HitResetTimerHandle, this, &ANXPlayerCharacter::ResetHit, 0.5f, false);
+
 	return ActualDamage;
+}
+void ANXPlayerCharacter::ResetHit()
+{
+	bIsHitted = false;
 }
 
 
@@ -455,10 +492,64 @@ void ANXPlayerCharacter::UnequipWeapon()
 	}
 }
 
+void ANXPlayerCharacter::Dash()
+{
+	if (bIsDashing) return;
+
+	FVector InputDirection = GetLastMovementInputVector();
+	InputDirection = InputDirection.GetSafeNormal();
+
+	UAnimMontage* PlayerDashAnimation = nullptr;
+	FVector DashVelocity = FVector::ZeroVector;
+
+	if (FVector::DotProduct(InputDirection, GetActorForwardVector()) > 0.7f)
+	{
+		PlayerDashAnimation = AM_PlayerDashForward;
+		DashVelocity = GetActorForwardVector() * DashSpeed;
+	}
+	else if (FVector::DotProduct(InputDirection, GetActorForwardVector()) < -0.7f)
+	{
+		PlayerDashAnimation = AM_PlayerDashBack;
+		DashVelocity = -GetActorForwardVector() * BackDashSpeed;
+	}
+	else if (FVector::DotProduct(InputDirection, GetActorRightVector()) > 0.7f)
+	{
+		PlayerDashAnimation = AM_PlayerDashRight;
+		DashVelocity = GetActorRightVector() * DashSpeed;
+	}
+	else if (FVector::DotProduct(InputDirection, GetActorRightVector()) < -0.7f)
+	{
+		PlayerDashAnimation = AM_PlayerDashLeft;
+		DashVelocity = -GetActorRightVector() * DashSpeed;
+	}
+
+	if(PlayerDashAnimation && GetMesh() && GetMesh()->GetAnimInstance())
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(PlayerDashAnimation, 1.f);
+	}
+
+	DashVelocity.Z = DashHeight;
+	LaunchCharacter(DashVelocity, true, true);
+
+	bIsDashing = true;
+	GetWorldTimerManager().SetTimer(DashCooldownTimerHandle, this, &ANXPlayerCharacter::ResetDash, 1.0f, false);
+}
+
+void ANXPlayerCharacter::ResetDash()
+{
+	bIsDashing = false;
+}
+
+
+
 void ANXPlayerCharacter::Reload(const FInputActionValue& Value)
 {
 	if (IsValid(WeaponInstance))
 	{
+		if (GetMesh() && GetMesh()->GetAnimInstance())
+		{
+			GetMesh()->GetAnimInstance()->Montage_Play(PlayerReloadAnimation, 1.f);
+		}
 		WeaponInstance->ReloadConfig();
 		UE_LOG(LogTemp, Log, TEXT("Weapon Reloaded"));
 	}

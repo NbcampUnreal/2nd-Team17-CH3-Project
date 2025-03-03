@@ -3,15 +3,16 @@
 
 ANXPlayerController::ANXPlayerController()
 	: InputMappingContext(nullptr),
-		MoveAction(nullptr),
-		SprintAction(nullptr),
-		JumpAction(nullptr),
-		LookAction(nullptr),
-		CrouchAction(nullptr),
-		AttackAction(nullptr),
-		ReloadAction(nullptr),
-		QuickSlot01(nullptr),
-		QuickSlot02(nullptr)
+	MoveAction(nullptr),
+	WalkAction(nullptr),
+	JumpAction(nullptr),
+	LookAction(nullptr),
+	CrouchAction(nullptr),
+	AttackAction(nullptr),
+	ReloadAction(nullptr),
+	DashAction(nullptr),
+	QuickSlot01(nullptr),
+	QuickSlot02(nullptr)
 {
 }
 

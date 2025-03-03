@@ -34,8 +34,23 @@ public:
 
 	virtual void AddHealth(float Amount) override; // UFUNCTION() 제거하고 override 추가
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* PlayerFireAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* PlayerReloadAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* PlayerHittedAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* PlayerDeathAnimation;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DashAnimation")
+	UAnimMontage* AM_PlayerDashForward;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DashAnimation")
+	UAnimMontage* AM_PlayerDashBack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DashAnimation")
+	UAnimMontage* AM_PlayerDashLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DashAnimation")
+	UAnimMontage* AM_PlayerDashRight;
 
 //숩
 
@@ -47,6 +62,7 @@ public:
 		AController* EventInstigator,
 		AActor* DamageCauser
 	);
+	void ResetHit();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -54,20 +70,29 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
 
+	//무브
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float NormalSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float SprintSpeedMultiplier;
+	float WalkSpeedMultiplier;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
-	float SprintSpeed;
+	float WalkSpeed;
 
+	//대쉬
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	float DashSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	float BackDashSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	float DashHeight;
+
+	//크라우치
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float CrouchSpeedMultiplier;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	float CrouchSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float CrouchTransitionSpeed;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float CameraLerp;
 
@@ -95,6 +120,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	FTimerHandle CrouchTimerHandle;
+	FTimerHandle HitResetTimerHandle;
+	FTimerHandle DashCooldownTimerHandle;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -105,9 +132,9 @@ protected:
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
 	UFUNCTION()
-	void StartSprint(const FInputActionValue& Value);
+	void StartWalk(const FInputActionValue& Value);
 	UFUNCTION()
-	void StopSprint(const FInputActionValue& Value);
+	void StopWalk(const FInputActionValue& Value);
 	UFUNCTION()
 	void StartCrouch(const FInputActionValue& Value);
 	UFUNCTION()
@@ -122,6 +149,9 @@ protected:
 	void EquipWepon();
 	UFUNCTION()
 	void UnequipWeapon();
+	UFUNCTION()
+	void Dash();
+	void ResetDash();
 
 	void ApplyCrouch();
 
@@ -134,5 +164,6 @@ private:
 	void InputQuickSlot01(const FInputActionValue& Value);
 	void InputQuickSlot02(const FInputActionValue& Value);
 
-
+	bool bIsHitted;
+	bool bIsDashing;
 };
