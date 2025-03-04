@@ -123,13 +123,14 @@ void ANXNonPlayerCharacter::OnDeath()
 	{
 			AIController->EndAI();
 	}
+	GetCharacterMovement()->StopMovementImmediately();
 	if (GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(NPCDeadAnimation,1.f);
 	}
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ANXNonPlayerCharacter::EnableRagdoll, 0.7f, false);
-	SetLifeSpan(3.0f);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ANXNonPlayerCharacter::EnableRagdoll, 3.5f, false);
+	SetLifeSpan(8.5f);
 	if (UWorld* World = GetWorld())
 	{
 		if (ANXGameState* GameState = World->GetGameState<ANXGameState>())

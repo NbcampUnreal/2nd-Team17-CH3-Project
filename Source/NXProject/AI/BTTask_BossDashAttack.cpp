@@ -50,6 +50,14 @@ EBTNodeResult::Type UBTTask_BossDashAttack::ExecuteTask(UBehaviorTreeComponent& 
 	FRotator LookAtRotation = FRotationMatrix::MakeFromX(DirectionToTarget).Rotator();
 	AICharacter->SetActorRotation(LookAtRotation);
 
+	if (USkeletalMeshComponent* MeshComponent = AICharacter->GetMesh())
+	{
+		if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
+		{
+			AnimInstance->Montage_Play(AICharacter->BossDashAnimation, 1.f);
+		}
+	}
+
 	FTimerHandle DashDelayTimer;
 	AICharacter->GetWorldTimerManager().SetTimer(
 		DashDelayTimer,
@@ -61,7 +69,7 @@ EBTNodeResult::Type UBTTask_BossDashAttack::ExecuteTask(UBehaviorTreeComponent& 
 					AICharacter->LaunchCharacter(DashVelocity,true,true);
 				}
 			}),
-		0.3f,//대쉬 준비시간
+		0.7f,//대쉬 준비시간
 		false
 	);
 

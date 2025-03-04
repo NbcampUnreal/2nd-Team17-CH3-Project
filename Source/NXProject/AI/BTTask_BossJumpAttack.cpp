@@ -44,6 +44,13 @@ EBTNodeResult::Type UBTTask_BossJumpAttack::ExecuteTask(UBehaviorTreeComponent& 
 
 	AICharacter->GetCharacterMovement()->GravityScale = 2.0f;
 
+	if (USkeletalMeshComponent* MeshComponent = AICharacter->GetMesh()) 
+	{
+		if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
+		{
+			AnimInstance->Montage_Play(AICharacter->BossJumpAttackAnimation, 1.f);
+		}
+	}
 	FTimerHandle JumpDelayTimer;
 	AICharacter->GetWorldTimerManager().SetTimer(
 		JumpDelayTimer,

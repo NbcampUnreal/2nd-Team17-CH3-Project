@@ -35,6 +35,14 @@ EBTNodeResult::Type UNXBTTask_BackJump::ExecuteTask(UBehaviorTreeComponent& Owne
 	FVector LaunchVelocity = Direction * 800.0f;
 	LaunchVelocity.Z = 300.0f;
 
+	if (USkeletalMeshComponent* MeshComponent = AICharacter->GetMesh())
+	{
+		if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
+		{
+			AnimInstance->Montage_Play(AICharacter->BossJumpAnimation, 1.f);
+		}
+	}
+
 	AICharacter->LaunchCharacter(LaunchVelocity, true,true);
 
 	return EBTNodeResult::Succeeded;

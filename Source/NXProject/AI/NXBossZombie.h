@@ -28,6 +28,13 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "DashAttack")
 	FVector DashDirection;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* BossJumpAttackAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* BossJumpAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* BossDashAnimation;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")
 	float JumpAttackRadius = 300.f;
