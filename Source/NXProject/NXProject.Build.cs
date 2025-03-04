@@ -18,7 +18,7 @@ public class NXProject : ModuleRules
 			"AIModule","NavigationSystem", "GameplayTasks",
 
 			//UI
-			"UMG"
+			"UMG", "MediaAssets"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
