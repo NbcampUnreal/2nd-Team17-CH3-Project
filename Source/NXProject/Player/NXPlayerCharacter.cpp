@@ -363,12 +363,28 @@ void ANXPlayerCharacter::AddHealth(float Amount)
 
 void ANXPlayerCharacter::OnDeath()
 {
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		PC->SetIgnoreMoveInput(true);
+		PC->SetIgnoreLookInput(false);
+	}
+	bIsHitted = true;
+
 	if (GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(PlayerDeathAnimation, 1.f);
 	}
-
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ANXPlayerCharacter::EnableRagdoll, 0.7f, false);
 }
+
+void ANXPlayerCharacter::EnableRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+}
+
 //¼ü
 
 float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

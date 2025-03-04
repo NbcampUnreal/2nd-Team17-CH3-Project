@@ -34,11 +34,6 @@ void APortalActor::BeginPlay()
     if (GameState)
     {
         GameState->InitializePortalActor(this); // PortalActor 초기화
-        UE_LOG(LogTemp, Log, TEXT("PortalActor가 GameState에 등록되었습니다."));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("GameState를 찾을 수 없습니다!"));
     }
 
     if (PortalEffect)
@@ -61,11 +56,6 @@ void APortalActor::ActivateEffect()
     {
         PortalEffect->Activate(); // 이펙트 활성화
         bIsPortalActive = true; // 포탈 활성화 상태로 변경
-        UE_LOG(LogTemp, Log, TEXT("포탈 이펙트가 활성화되었습니다!"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("포탈 이펙트가 없습니다!"));
     }
 }
 
@@ -109,11 +99,6 @@ void APortalActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
         {
             // 캐릭터를 지정된 목적지 위치로 이동
             Character->SetActorLocation(DestinationLocation); // 포탈 이동
-            UE_LOG(LogTemp, Log, TEXT("캐릭터가 포탈을 통해 이동했습니다."));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("캐릭터가 포탈을 사용할 수 없습니다. 킬 수가 부족하거나 포탈이 비활성화 상태입니다."));
         }
     }
 }

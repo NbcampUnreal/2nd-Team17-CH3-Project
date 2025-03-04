@@ -125,10 +125,11 @@ void ANXNonPlayerCharacter::OnDeath()
 	}
 	if (GetMesh() && GetMesh()->GetAnimInstance())
 	{
-		//사망 애니메이션 실행
 		GetMesh()->GetAnimInstance()->Montage_Play(NPCDeadAnimation,1.f);
 	}
-	SetLifeSpan(1.5f);
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ANXNonPlayerCharacter::EnableRagdoll, 0.7f, false);
+	SetLifeSpan(3.0f);
 	if (UWorld* World = GetWorld())
 	{
 		if (ANXGameState* GameState = World->GetGameState<ANXGameState>())
@@ -137,4 +138,10 @@ void ANXNonPlayerCharacter::OnDeath()
 		}
 	}
 
+}
+
+void ANXNonPlayerCharacter::EnableRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }

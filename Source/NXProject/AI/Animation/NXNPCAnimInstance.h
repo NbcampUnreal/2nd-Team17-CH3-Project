@@ -24,6 +24,7 @@ protected:
 	void AnimNotify_CheckHit4();
 	UFUNCTION()
 	void AnimNotify_CheckHit5();
+	
 public:
 	FOnCheckHit OnCheckHit;
 

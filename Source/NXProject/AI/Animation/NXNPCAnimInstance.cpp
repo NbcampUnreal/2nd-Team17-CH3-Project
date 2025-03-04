@@ -39,17 +39,9 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 2.f);
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-				}
+				
 			}
 		}
-	}
-	else 
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 2.f);
 	}
 }
 
@@ -84,17 +76,9 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit2()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Green, false, 2.f);
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-				}
+			
 			}
 		}
-	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Red, false, 2.f);
 	}
 }
 
@@ -130,17 +114,9 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit3()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Green, false, 2.f);
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-				}
+				
 			}
 		}
-	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Red, false, 2.f);
 	}
 }
 void UNXNPCAnimInstance::AnimNotify_CheckHit4()
@@ -175,17 +151,9 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit4()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Green, false, 2.f);
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-				}
+				
 			}
 		}
-	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 40.f, 16, FColor::Red, false, 2.f);
 	}
 }
 void UNXNPCAnimInstance::AnimNotify_CheckHit5()
@@ -220,16 +188,8 @@ void UNXNPCAnimInstance::AnimNotify_CheckHit5()
 			{
 				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Green, false, 2.f);
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-				}
 			}
 		}
 	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, 60.f, 16, FColor::Red, false, 2.f);
-	}
 }
+
