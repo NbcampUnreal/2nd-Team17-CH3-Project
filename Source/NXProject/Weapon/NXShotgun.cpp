@@ -33,7 +33,6 @@ void ANXShotgun::FireShotgun()
 	PlayerController->GetPlayerViewPoint(CameraLocation, CameraRotation);
 
 	FVector MuzzleLocation = MeshComp->GetSocketLocation(TEXT("Muzzle"));
-	//FRotator MuzzleRotation = MeshComp->GetSocketRotation(TEXT("Muzzle"));
 
 	FVector ShotDirection = CameraRotation.Vector();
 
