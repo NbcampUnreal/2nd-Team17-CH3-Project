@@ -12,14 +12,12 @@ ANXBigHealItem::ANXBigHealItem()
 
 void ANXBigHealItem::ActivateItem(AActor* Activator)
 {
-	UE_LOG(LogTemp, Warning, TEXT("오예예ㅖㅖㅖㅖㅖㅖㅖ"));
 
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
 		if (ANXPlayerCharacter* PlayerCharacter = Cast<ANXPlayerCharacter>(Activator))
 		{
 			PlayerCharacter->AddHealth(HealAmount);
-			UE_LOG(LogTemp, Warning, TEXT("오버랩"));
 		}
 
 		DestroyItem();

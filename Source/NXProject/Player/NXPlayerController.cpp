@@ -11,8 +11,6 @@ ANXPlayerController::ANXPlayerController()
 	AttackAction(nullptr),
 	ReloadAction(nullptr),
 	DashAction(nullptr)
-	/*QuickSlot01(nullptr),
-	QuickSlot02(nullptr)*/
 {
 }
 

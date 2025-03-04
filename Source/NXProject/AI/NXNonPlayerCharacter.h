@@ -39,6 +39,7 @@ protected:
 	float Health;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	virtual void OnDeath();
+	void EnableRagdoll();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime)override;
 private:

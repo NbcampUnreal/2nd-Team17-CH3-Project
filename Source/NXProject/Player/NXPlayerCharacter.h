@@ -56,6 +56,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void OnDeath();
+	void EnableRagdoll();
 
 	float TakeDamage(float DamageAmount,
 		struct FDamageEvent const& DamageEvent,

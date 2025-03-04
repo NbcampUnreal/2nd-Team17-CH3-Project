@@ -12,15 +12,10 @@ class NXPROJECT_API ANXWeaponActor : public AActor
 public:	
 	ANXWeaponActor();
 
-	//USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
 protected:
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess))
-	TObjectPtr<USkeletalMeshComponent> Mesh;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USceneComponent* SceneComp;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	//USkeletalMeshComponent* Mesh;
 };

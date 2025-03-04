@@ -79,10 +79,6 @@ void ANXNonPlayerCharacter::UpdateOverheadHP()
 			const float HPPercent = (MaxHealth > 0.f) ? Health / MaxHealth : 0.f;
 			HPBar->SetPercent(HPPercent);
 			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("HP Updated: %f"), HPPercent));
-			}
 		}
 	}
 }
@@ -104,11 +100,6 @@ float ANXNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 			GetMesh()->GetAnimInstance()->Montage_Play(NPCHittedAnimation,1.f);
 		}
 		UpdateOverheadHP();
-
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("NPC Hit! Health: %f"), Health));
-		}
 
 		if (Health <= 0.0f)
 		{
@@ -134,10 +125,11 @@ void ANXNonPlayerCharacter::OnDeath()
 	}
 	if (GetMesh() && GetMesh()->GetAnimInstance())
 	{
-		//사망 애니메이션 실행
 		GetMesh()->GetAnimInstance()->Montage_Play(NPCDeadAnimation,1.f);
 	}
-	SetLifeSpan(1.5f);
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ANXNonPlayerCharacter::EnableRagdoll, 0.7f, false);
+	SetLifeSpan(3.0f);
 	if (UWorld* World = GetWorld())
 	{
 		if (ANXGameState* GameState = World->GetGameState<ANXGameState>())
@@ -146,4 +138,10 @@ void ANXNonPlayerCharacter::OnDeath()
 		}
 	}
 
+}
+
+void ANXNonPlayerCharacter::EnableRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }

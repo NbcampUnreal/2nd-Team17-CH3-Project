@@ -45,13 +45,8 @@ void ANXBossZombie::Landed(const FHitResult& Hit)
 			{
 				PlayerCharacter->TakeDamage(JumpAttackDamage, FDamageEvent(), OwnerController, this);
 				HitPlayers.Add(PlayerCharacter);
-				DrawDebugSphere(GetWorld(), AttackLocation, JumpAttackRadius, 16, FColor::Green, false, 2.f);
 			}
 		}
-	}
-	else
-	{
-		DrawDebugSphere(GetWorld(), AttackLocation, JumpAttackRadius, 16, FColor::Red, false, 2.f);
 	}
 
 	bIsJumpAttacking = false;
@@ -116,7 +111,6 @@ void ANXBossZombie::OnDashHit()
 			ANXPlayerCharacter* PlayerCharacter = Cast<ANXPlayerCharacter>(Hit.GetActor());
 			if (PlayerCharacter)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Dash hit player: %s"), *PlayerCharacter->GetName());
 				PlayerCharacter->TakeDamage(DashAttackDamage, FDamageEvent(), OwnerController, this);
 			}
 		}

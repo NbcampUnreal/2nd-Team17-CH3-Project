@@ -19,9 +19,6 @@ void ANXGameState::AddScore(int32 Amount)
 {
     Score += Amount;
 
-    // 점수를 화면에 표시
-    GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Score: %d"), Score));
-
     // 포탈 이펙트 활성화 조건 확인
     if (Score >= RequiredScoreToActivatePortal && PortalActor)
     {
@@ -33,12 +30,7 @@ void ANXGameState::ActivatePortalEffect()
 {
     if (PortalActor)
     {
-        UE_LOG(LogTemp, Log, TEXT("포탈"));
         PortalActor->ActivateEffect(); // 포탈 이펙트 활성화
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("PortalActor가 초기화되지 않았습니다!"));
     }
 }
 
@@ -46,5 +38,4 @@ void ANXGameState::ActivatePortalEffect()
 void ANXGameState::InitializePortalActor(APortalActor* Portal)
 {
     PortalActor = Portal;
-    UE_LOG(LogTemp, Log, TEXT("PortalActor가 초기화되었습니다."));
 }

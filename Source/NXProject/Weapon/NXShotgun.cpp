@@ -1,6 +1,5 @@
 #include "Weapon/NXShotgun.h"
 #include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
 
 ANXShotgun::ANXShotgun()
 {
@@ -83,12 +82,7 @@ void ANXShotgun::ShotgunTrace(FVector Start, FVector End)
 
 			UGameplayStatics::ApplyDamage(HitActor, Damage, GetInstigatorController(), this, UDamageType::StaticClass());
 
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 		}
-	}
-	else
-	{
-		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
 	}
 }
 
