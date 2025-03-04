@@ -79,10 +79,6 @@ void ANXNonPlayerCharacter::UpdateOverheadHP()
 			const float HPPercent = (MaxHealth > 0.f) ? Health / MaxHealth : 0.f;
 			HPBar->SetPercent(HPPercent);
 			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("HP Updated: %f"), HPPercent));
-			}
 		}
 	}
 }
@@ -104,11 +100,6 @@ float ANXNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 			GetMesh()->GetAnimInstance()->Montage_Play(NPCHittedAnimation,1.f);
 		}
 		UpdateOverheadHP();
-
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("NPC Hit! Health: %f"), Health));
-		}
 
 		if (Health <= 0.0f)
 		{

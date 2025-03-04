@@ -14,9 +14,7 @@
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
-//이인화 : 피격 확인을 위해 작성한 코드입니다 삭제하셔도 괜찮습니다 ------------
 #include "Engine/OverlapResult.h"
-//-----------------
 #include "Weapon/NXShotgun.h"
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
@@ -143,13 +141,6 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 					this,
 					&ANXPlayerCharacter::StartAttack
 				);
-
-				//EnhancedInput->BindAction(
-				//	PlayerController->AttackAction,
-				//	ETriggerEvent::Completed,
-				//	this,
-				//	&ANXPlayerCharacter::StopAttack
-				//);
 			}
 
 			if (PlayerController->ReloadAction)
@@ -162,25 +153,6 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 				);
 			}
 
-		/*	if (PlayerController->QuickSlot01)
-			{
-				EnhancedInput->BindAction(
-					PlayerController->QuickSlot01,
-					ETriggerEvent::Triggered,
-					this,
-					&ANXPlayerCharacter::InputQuickSlot01
-				);
-			}*/
-
-		/*	if (PlayerController->QuickSlot02)
-			{
-				EnhancedInput->BindAction(
-					PlayerController->QuickSlot02,
-					ETriggerEvent::Triggered,
-					this,
-					&ANXPlayerCharacter::InputQuickSlot02
-				);
-			}*/
 			if (PlayerController->DashAction)
 			{
 				EnhancedInput->BindAction(
@@ -197,7 +169,6 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void ANXPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("HP : %f"), Health);
 	if (WeaponClass)
 	{
 		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass);
@@ -219,18 +190,6 @@ void ANXPlayerCharacter::Tick(float DeltaTime)
 	float CurrentCapsuleHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	float NewCapsuleHeight = FMath::FInterpTo(CurrentCapsuleHeight, TargetCapsuleHeight, DeltaTime, CrouchTransitionSpeed);
 	GetCapsuleComponent()->SetCapsuleHalfHeight(NewCapsuleHeight, true);
-
-	/*float TargetCameraHeight = bIsCrouched ? 40.0f : 45.0f;
-	FVector NewCameraLocation = FMath::VInterpTo(
-		CameraComp->GetRelativeLocation(),
-		FVector(0, 0, TargetCameraHeight),
-		DeltaTime,
-		CrouchTransitionSpeed
-	);
-	CameraComp->SetRelativeLocation(NewCameraLocation);
-
-	float TargetLerp = bIsCrouched ? 0.5f : 0.0f;
-	CameraLerp = FMath::FInterpTo(CameraLerp, TargetLerp, DeltaTime, 5.0f);*/
 
 }
 
@@ -383,38 +342,11 @@ void ANXPlayerCharacter::StartAttack(const FInputActionValue& Value)
 		}
 	}
 }
-//
-//void ANXPlayerCharacter::StopAttack(const FInputActionValue& Value)
-//{
-//
-//}
-
 void ANXPlayerCharacter::ResetFire()
 {
 	bIsFire = false;
 }
 
-//void ANXPlayerCharacter::InputQuickSlot01(const FInputActionValue& InValue)
-//{
-//	FName WeaponSocket(TEXT("WeaponSocket"));
-//	if (GetMesh()->DoesSocketExist(WeaponSocket) == true && IsValid(WeaponInstance) == false)
-//	{
-//		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-//		if (IsValid(WeaponInstance) == true)
-//		{
-//			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-//		}
-//	}
-//}
-//
-//void ANXPlayerCharacter::InputQuickSlot02(const FInputActionValue& InValue)
-//{
-//	if (IsValid(WeaponInstance) == true)
-//	{
-//		WeaponInstance->Destroy();
-//		WeaponInstance = nullptr;
-//	}
-//}
 
 //숩
 float ANXPlayerCharacter::GetHealth() const
@@ -425,7 +357,6 @@ float ANXPlayerCharacter::GetHealth() const
 void ANXPlayerCharacter::AddHealth(float Amount)
 {
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
-	UE_LOG(LogTemp, Log, TEXT("Health increased to: %f"), Health);
 
 
 }
@@ -436,7 +367,6 @@ void ANXPlayerCharacter::OnDeath()
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(PlayerDeathAnimation, 1.f);
 	}
-	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
 
 }
 //숩
@@ -454,12 +384,6 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
-			FString::Printf(TEXT("Player HP: %.1f / %.1f"), Health, MaxHealth));
-	}
-
 	if (Health <= 0.0f)
 	{
 		OnDeath();
@@ -475,30 +399,6 @@ void ANXPlayerCharacter::ResetHit()
 	bIsHitted = false;
 }
 
-
-//void ANXPlayerCharacter::EquipWepon()
-//{
-//	FName WeaponSocket(TEXT("WeaponSocket"));
-//	if (GetMesh()->DoesSocketExist(WeaponSocket) && !IsValid(WeaponInstance))
-//	{
-//		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-//		if (IsValid(WeaponInstance))
-//		{
-//			WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-//			UE_LOG(LogTemp, Log, TEXT("Weapon Equipped"));
-//		}
-//	}
-//}
-//
-//void ANXPlayerCharacter::UnequipWeapon()
-//{
-//	if (IsValid(WeaponInstance))
-//	{
-//		WeaponInstance->Destroy();
-//		WeaponInstance = nullptr;
-//		UE_LOG(LogTemp, Log, TEXT("Weapon Unequipped"));
-//	}
-//}
 
 void ANXPlayerCharacter::Dash()
 {
@@ -590,55 +490,3 @@ void ANXPlayerCharacter::EndReload()
 {
 	bIsReloading = false;
 }
-//이인화 : NPC 피격 확인을 위해 작성한 코드 삭제해도 괜찮습니다--------
-//void ANXPlayerCharacter::MeleeAttack()
-//{
-//	if (bIsAttacking == true)
-//	{
-//		return;
-//	}
-//	if (bIsAttacking == false)
-//	{
-//		APawn* PawnOwner = this;
-//		if (!PawnOwner)return;
-//
-//		FVector AttackLocation = PawnOwner->GetActorLocation() + PawnOwner->GetActorForwardVector() * 100.f;
-//
-//		TArray<FOverlapResult> OverlapResults;
-//		FCollisionQueryParams CollisionQueryParams(NAME_None, false, PawnOwner);
-//
-//		bool bResult = GetWorld()->OverlapMultiByChannel(
-//			OverlapResults,
-//			AttackLocation,
-//			FQuat::Identity,
-//			ECollisionChannel::ECC_Pawn,
-//			FCollisionShape::MakeSphere(30.f),
-//			CollisionQueryParams
-//		);
-//		if (bResult == true)
-//		{
-//			AController* OwnerController = PawnOwner->GetController();
-//			TSet<AActor*> HitPlayers;
-//
-//			for (auto const& OverlapResult : OverlapResults)
-//			{
-//				ANXNonPlayerCharacter* NPC = Cast<ANXNonPlayerCharacter>(OverlapResult.GetActor());
-//				if (IsValid(NPC) && !HitPlayers.Contains(NPC))
-//				{
-//					NPC->TakeDamage(10.f, FDamageEvent(), OwnerController, PawnOwner);
-//					HitPlayers.Add(NPC);
-//					DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Green, false, 5.f);
-//					if (GEngine)
-//					{
-//						GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit Player!"));
-//					}
-//				}
-//			}
-//		}
-//		else
-//		{
-//			DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 16, FColor::Red, false, 5.f);
-//		}
-//	}
-//}
-//-------------

@@ -42,7 +42,6 @@ void ANXBaseItem::OnItemOverlap(
     bool bFromSweep,
     const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Warning, TEXT("오예잇"));
 
     if (OtherActor && OtherActor->ActorHasTag("Player"))
     {
