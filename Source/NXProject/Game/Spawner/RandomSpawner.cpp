@@ -4,6 +4,7 @@
 #include "AI/NXNonPlayerCharacter.h"
 #include "Item/NXBaseItem.h"
 #include "GameFramework/Actor.h"
+#include "Algo/RandomShuffle.h"
 
 ARandomSpawner::ARandomSpawner()
 {
@@ -31,19 +32,22 @@ void ARandomSpawner::SpawnRandomActor()
     {
         // 50% 확률로 아이템 또는 좀비 스폰
         bool bSpawnZombie = FMath::RandBool();
-
         TArray<FSpawnData> SpawnableActors = bSpawnZombie ? SpawnableZombies : SpawnableItems;
+
         if (SpawnableActors.Num() > 0)
         {
+            // 1? 가중치 총합 계산
             float TotalChance = 0.0f;
             for (const FSpawnData& ActorData : SpawnableActors)
             {
                 TotalChance += ActorData.SpawnChance;
             }
 
+            // 2? 0 ~ TotalChance 사이의 랜덤 값 생성
             float RandomValue = FMath::FRandRange(0.0f, TotalChance);
             float AccumulatedChance = 0.0f;
 
+            // 3? 가중치 비교하여 액터 선택
             for (const FSpawnData& ActorData : SpawnableActors)
             {
                 AccumulatedChance += ActorData.SpawnChance;
@@ -64,13 +68,14 @@ void ARandomSpawner::SpawnRandomActor()
                             *ActorData.ActorClass->GetName(),
                             *SpawnLocation.ToString());
 
-                        break;
+                        return; // 선택된 액터가 스폰되면 종료
                     }
                 }
             }
         }
     }
 }
+
 
 FVector ARandomSpawner::GetRandomPointInVolume() const
 {
@@ -92,3 +97,4 @@ void ARandomSpawner::DestroyActor()
         CurrentSpawnedActor = nullptr;
     }
 }
+
