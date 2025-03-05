@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/WInUserWidget.h"
 #include "Game/NXGameInstance.h"
 
 ANXGameState::ANXGameState()
@@ -61,7 +62,28 @@ void ANXGameState::InitializePortalActor(APortalActor* Portal)
 {
     PortalActor = Portal;
 }
-/**
+
+void ANXGameState::ShowWinGameUI()
+{
+    if (WinUserWidgetClass) 
+    {
+        UWInUserWidget* WinUserWidget = CreateWidget<UWInUserWidget>(GetWorld(), WinUserWidgetClass);
+        if (WinUserWidget)
+        {
+            WinUserWidget->AddToViewport(); 
+
+            APlayerController* PC = GetWorld()->GetFirstPlayerController();
+            if (PC)
+            {
+                FInputModeUIOnly InputMode;
+                InputMode.SetWidgetToFocus(WinUserWidget->TakeWidget());
+                PC->SetInputMode(InputMode);
+                PC->bShowMouseCursor = true;
+            }
+        }
+    }
+}
+
 void ANXGameState::UpdateHUD()
 {
     // 플레이어 컨트롤러가 유효한지 확인
@@ -76,49 +98,18 @@ void ANXGameState::UpdateHUD()
                 // HUD 위젯에서 Score 텍스트 블록을 찾음
                 if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Score"))))
                 {
-                    // 게임 인스턴스가 유효한지 확인
-                    if (UNXGameInstance* NXGameInstance = Cast<UNXGameInstance>(GetGameInstance()))
+                    if (UGameInstance* GameInstance = GetGameInstance())
                     {
-                        // TotalScore 값을 ScoreText에 업데이트
-                        ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), NXGameInstance->TotalScore)));
+                        // 게임 인스턴스가 유효한지 확인
+                        if (UNXGameInstance* NXGameInstance = Cast<UNXGameInstance>(GetGameInstance()))
+                        {
+                            // TotalScore 값을 ScoreText에 업데이트
+                            ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), NXGameInstance->TotalScore)));
+                        }
                     }
+                    
                 }
             }
-        }
-    }
-}*/
-void ANXGameState::UpdateHUD()
-{
-    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-    {
-        if (ANXPlayerController* NXPlayerController = Cast<ANXPlayerController>(PlayerController))
-        {
-            if (UUserWidget* HUDWidget = NXPlayerController->GetHUDWidget())
-            {
-                if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Score"))))
-                {
-                    if (UNXGameInstance* NXGameInstance = Cast<UNXGameInstance>(GetGameInstance()))
-                    {
-                        int32 CurrentScore = NXGameInstance->TotalScore;
-                        ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), CurrentScore)));
-
-                        // 디버깅 로그 추가
-                        UE_LOG(LogTemp, Warning, TEXT("UpdateHUD: Score Updated to %d"), CurrentScore);
-                    }
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("UpdateHUD: ScoreText not found!"));
-                }
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("UpdateHUD: HUDWidget is nullptr!"));
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("UpdateHUD: PlayerController is not ANXPlayerController!"));
         }
     }
 }

@@ -27,7 +27,13 @@ public:
 
     // PortalActor를 초기화하는 함수
     void InitializePortalActor(APortalActor* Portal);
-    
+
+    UFUNCTION(BlueprintCallable)
+    void ShowWinGameUI();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<class UUserWidget> WinUserWidgetClass;
+
 
     //허드
     void UpdateHUD();

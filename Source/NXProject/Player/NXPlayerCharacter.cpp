@@ -56,7 +56,7 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	OverheadWidget->SetupAttachment(RootComponent);
 
 	// 위젯 클래스 설정 (예: BP_OverheadHPWidget)
-	static ConstructorHelpers::FClassFinder<UUserWidget> OverheadWidgetClass(TEXT("/Game/UI/WBP_HUD"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> OverheadWidgetClass(TEXT("/Blueprint/UI/WBP_HUD"));
 	if (OverheadWidgetClass.Class)
 	{
 		OverheadWidget->SetWidgetClass(OverheadWidgetClass.Class);
