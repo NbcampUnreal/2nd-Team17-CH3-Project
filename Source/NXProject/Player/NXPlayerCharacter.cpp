@@ -14,6 +14,8 @@
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
+#include "Components/WidgetComponent.h"//cnrk
+#include "Components/ProgressBar.h"//추가
 #include "Engine/OverlapResult.h"
 #include "Weapon/NXShotgun.h"
 ANXPlayerCharacter::ANXPlayerCharacter()
@@ -47,6 +49,24 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
+
+	// OverheadWidget 초기화
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(RootComponent);
+
+	// 위젯 클래스 설정 (예: BP_OverheadHPWidget)
+	static ConstructorHelpers::FClassFinder<UUserWidget> OverheadWidgetClass(TEXT("/Game/UI/WBP_HUD"));
+	if (OverheadWidgetClass.Class)
+	{
+		OverheadWidget->SetWidgetClass(OverheadWidgetClass.Class);
+	}
+
+	// LoseScreenClass 기본값 설정
+	static ConstructorHelpers::FClassFinder<UUserWidget> LoseScreenClassFinder(TEXT("/Blueprint/UI/WBP_LoseScreen"));
+	if (LoseScreenClassFinder.Class)
+	{
+		LoseScreenClass = LoseScreenClassFinder.Class;
+	}
 
 
 
@@ -180,6 +200,10 @@ void ANXPlayerCharacter::BeginPlay()
 		}
 	}
 	WeaponInstance->SetOwner(this);
+
+	// 위젯 초기화
+	OverheadWidget->InitWidget();
+	UpdateOverheadHP();
 }
 
 void ANXPlayerCharacter::Tick(float DeltaTime)
@@ -363,6 +387,26 @@ void ANXPlayerCharacter::AddHealth(float Amount)
 
 void ANXPlayerCharacter::OnDeath()
 {
+	// 플레이어가 죽었을 때 호출되는 함수
+	if (LoseScreenClass)
+	{
+		// LoseScreen UI 생성
+		UUserWidget* LoseScreen = CreateWidget<UUserWidget>(GetWorld(), LoseScreenClass);
+		if (LoseScreen)
+		{
+			// UI를 화면에 추가
+			LoseScreen->AddToViewport();
+
+			// 플레이어 입력 비활성화
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			if (PC)
+			{
+				PC->SetInputMode(FInputModeUIOnly()); // UI만 입력 가능
+				PC->bShowMouseCursor = true; // 마우스 커서 표시
+			}
+		}
+	}
+
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (PC)
 	{
@@ -399,6 +443,7 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	}
 
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	UpdateOverheadHP();//g추가
 
 	if (Health <= 0.0f)
 	{
@@ -506,3 +551,27 @@ void ANXPlayerCharacter::EndReload()
 {
 	bIsReloading = false;
 }
+
+void ANXPlayerCharacter::UpdateOverheadHP()
+{
+	// OverheadWidget이 null인지 체크
+	if (!OverheadWidget)
+	{
+		return;
+	}
+
+	// OverheadWidget에서 실제 위젯 객체를 가져옵니다.
+	UUserWidget* WidgetInstance = OverheadWidget->GetUserWidgetObject(); // UWidgetComponent에서 호출
+	if (WidgetInstance)
+	{
+		// 이름이 "OverHeadHP"인 ProgressBar를 찾습니다.
+		if (UProgressBar* HPBar = Cast<UProgressBar>(WidgetInstance->GetWidgetFromName(TEXT("OverHeadHP"))))
+		{
+			// 체력 비율을 계산합니다.
+			const float HPPercent = (MaxHealth > 0.f) ? Health / MaxHealth : 0.f;
+			// 체력 바의 퍼센트를 설정합니다.
+			HPBar->SetPercent(HPPercent);
+		}
+	}
+}
+

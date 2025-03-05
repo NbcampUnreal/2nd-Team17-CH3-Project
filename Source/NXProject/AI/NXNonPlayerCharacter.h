@@ -26,8 +26,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 	int32 GetHealth() const;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	UWidgetComponent* OverheadWidget;
+
+	// 엔딩 UI 클래스
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> LoseScreenClass; // WBP_LoseScreen
 
 	void UpdateOverheadHP();
 
@@ -44,4 +46,8 @@ protected:
 	virtual void Tick(float DeltaTime)override;
 private:
 	bool bIsDead;
+
+	// 위젯 컴포넌트
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	UWidgetComponent* OverheadWidget;
 };

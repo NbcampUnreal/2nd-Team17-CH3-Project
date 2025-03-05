@@ -2,11 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Player/NXCharacterBase.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Components/ProgressBar.h"
+#include "Blueprint/UserWidget.h"
 #include "NXPlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class ANXWeaponActor;
+class UWidgetComponent;
 
 struct FInputActionValue;
 
@@ -18,6 +22,10 @@ class NXPROJECT_API ANXPlayerCharacter : public ANXCharacterBase
 public:
 	ANXPlayerCharacter();
 
+	// 엔딩 UI 클래스
+	UPROPERTY(EditDefaultsOnly, Category = "UI") // 여기서 Category는 원하는 대로 변경 가능
+		TSubclassOf<UUserWidget> LoseScreenClass; // WBP_LoseScreen
+
 	/*void OnCheckHit();*/
 //숩
 	// 현재 체력
@@ -27,6 +35,7 @@ public:
 	// 최대 체력
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
+
 	
 	// NXPlayerCharacter.h
 	UFUNCTION(BlueprintPure, Category = "Health")
@@ -165,6 +174,10 @@ protected:
 	void ApplyCrouch();
 
 	void ApplyUnCrouch();
+
+	// 오버헤드 HP 업데이트 함수
+	void UpdateOverheadHP();
+
 	//이인화 : NPC 피격 및 사망 확인을 위한 코드 삭제해도 괜찮습니다-------------------
 	/*UFUNCTION()
 	void MeleeAttack();*/
@@ -177,4 +190,8 @@ private:
 	bool bIsDashing;
 	bool bIsFire;
 	bool bIsReloading;
+
+	// 위젯 컴포넌트
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	UWidgetComponent* OverheadWidget;
 };

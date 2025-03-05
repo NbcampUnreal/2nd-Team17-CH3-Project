@@ -13,6 +13,13 @@ ANXBossZombie::ANXBossZombie()
 	MaxHealth = 300.0f;
 	Health = MaxHealth;
 
+	// WinScreenClass 기본값 설정
+	static ConstructorHelpers::FClassFinder<UUserWidget> WinScreenClassFinder(TEXT("/Blueprint/UI/WBP_WinScreen"));
+	if (WinScreenClassFinder.Class)
+	{
+		WinScreenClass = WinScreenClassFinder.Class;
+	}
+
 }
 
 void ANXBossZombie::Landed(const FHitResult& Hit)
@@ -116,4 +123,27 @@ void ANXBossZombie::OnDashHit()
 		}
 	}
 
+}
+
+void ANXBossZombie::OnDeath()
+{
+	// 보스가 죽었을 때 호출되는 함수
+	if (WinScreenClass)
+	{
+		// WinScreen UI 생성
+		UUserWidget* WinScreen = CreateWidget<UUserWidget>(GetWorld(), WinScreenClass);
+		if (WinScreen)
+		{
+			// UI를 화면에 추가
+			WinScreen->AddToViewport();
+
+			// 플레이어 입력 비활성화
+			APlayerController* PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
+			if (PC)
+			{
+				PC->SetInputMode(FInputModeUIOnly()); // UI만 입력 가능
+				PC->bShowMouseCursor = true; // 마우스 커서 표시
+			}
+		}
+	}
 }

@@ -19,7 +19,7 @@ void UUW_TitleLayout::NativeConstruct()
 {
 	// 버튼이 유효한지 확인 후 클릭 이벤트를 바인딩
 	PlayButton.Get()->OnClicked.AddDynamic(this, &ThisClass::OnPlayButtonClicked);
-	ExitButton.Get()->OnClicked.AddDynamic(this, &ThisClass::OnPlayButtonClicked);
+	ExitButton.Get()->OnClicked.AddDynamic(this, &ThisClass::OnExitButtonClicked);
 
 }
 

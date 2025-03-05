@@ -17,6 +17,9 @@ protected:
     // 게임 시작 시 호출되는 함수
     virtual void BeginPlay() override;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
+    USoundBase* PickupSound; // 사운드
+
 public:
     // 매 프레임 호출되는 함수
     virtual void Tick(float DeltaTime) override;

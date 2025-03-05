@@ -6,6 +6,10 @@
 #include "AI/NXNonPlayerCharacter.h"
 #include "NXBossZombie.generated.h"
 
+// 전방 선언
+class UWidgetComponent;
+class UUserWidget;
+
 
 UCLASS()
 class NXPROJECT_API ANXBossZombie : public ANXNonPlayerCharacter
@@ -34,6 +38,13 @@ public:
 	UAnimMontage* BossJumpAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* BossDashAnimation;
+
+	// 보스가 죽을 때 호출되는 함수
+	void OnDeath();
+
+	// 엔딩 UI 클래스
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> WinScreenClass; // WBP_WinScreen
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JumpAttack")

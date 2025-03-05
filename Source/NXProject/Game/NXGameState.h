@@ -14,6 +14,8 @@ class NXPROJECT_API ANXGameState : public AGameStateBase
 public:
     ANXGameState();
 
+    virtual void BeginPlay() override;
+
     // 점수를 가져오는 함수
     int32 GetScore() const;
 
@@ -25,6 +27,10 @@ public:
 
     // PortalActor를 초기화하는 함수
     void InitializePortalActor(APortalActor* Portal);
+    
+
+    //허드
+    void UpdateHUD();
 
 private:
     int32 Score; // 현재 점수

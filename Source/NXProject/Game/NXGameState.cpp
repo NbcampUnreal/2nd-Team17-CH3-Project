@@ -1,13 +1,24 @@
 #include "Game/NXGameState.h"
 #include "Game/PortalActor.h"
 #include "Engine/Engine.h"
+#include "Player/NXPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
+#include "Game/NXGameInstance.h"
 
 ANXGameState::ANXGameState()
 {
     Score = 0;
     RequiredScoreToActivatePortal = 2; // 2킬 시 포탈 작동
     PortalActor = nullptr; // 초기화
+}
+
+void ANXGameState::BeginPlay()
+{
+    Super::BeginPlay();
+
+    UpdateHUD();
 }
 
 int32 ANXGameState::GetScore() const
@@ -24,6 +35,15 @@ void ANXGameState::AddScore(int32 Amount)
     {
         ActivatePortalEffect(); // 포탈 이펙트 즉시 활성화
     }
+
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        UNXGameInstance* NXGameInstance = Cast<UNXGameInstance>(GameInstance);
+        if (NXGameInstance)
+        {
+            NXGameInstance->AddToScore(Amount);
+        }
+    }
 }
 
 void ANXGameState::ActivatePortalEffect()
@@ -38,4 +58,30 @@ void ANXGameState::ActivatePortalEffect()
 void ANXGameState::InitializePortalActor(APortalActor* Portal)
 {
     PortalActor = Portal;
+}
+
+void ANXGameState::UpdateHUD()
+{
+    // 플레이어 컨트롤러가 유효한지 확인
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        // 플레이어 컨트롤러가 NXPlayerController인지 확인
+        if (ANXPlayerController* NXPlayerController = Cast<ANXPlayerController>(PlayerController))
+        {
+            // HUD 위젯이 유효한지 확인
+            if (UUserWidget* HUDWidget = NXPlayerController->GetHUDWidget())
+            {
+                // HUD 위젯에서 Score 텍스트 블록을 찾음
+                if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Score"))))
+                {
+                    // 게임 인스턴스가 유효한지 확인
+                    if (UNXGameInstance* NXGameInstance = Cast<UNXGameInstance>(GetGameInstance()))
+                    {
+                        // TotalScore 값을 ScoreText에 업데이트
+                        ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), NXGameInstance->TotalScore)));
+                    }
+                }
+            }
+        }
+    }
 }

@@ -1,5 +1,7 @@
 #include "Player/NXPlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h" // 헤더 추가
+#include "Game/NXGameState.h"
 
 ANXPlayerController::ANXPlayerController()
 	: InputMappingContext(nullptr),
@@ -10,7 +12,9 @@ ANXPlayerController::ANXPlayerController()
 	CrouchAction(nullptr),
 	AttackAction(nullptr),
 	ReloadAction(nullptr),
-	DashAction(nullptr)
+	DashAction(nullptr),
+	HUDWidgetClass(nullptr),
+	HUDWidgetInstance(nullptr)
 {
 }
 
@@ -28,4 +32,25 @@ void ANXPlayerController::BeginPlay()
 			}
 		}
 	}
+	if (HUDWidgetClass)
+	{
+		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidgetInstance)
+		{
+			HUDWidgetInstance->AddToViewport();
+		}
+	}
+
+	ANXGameState* NXGameState = GetWorld() ? GetWorld()->GetGameState<ANXGameState>() : nullptr;
+	if (NXGameState)
+	{
+		NXGameState->UpdateHUD();
+	}
 }
+
+UUserWidget* ANXPlayerController::GetHUDWidget() const
+{
+	return HUDWidgetInstance;
+}
+
+

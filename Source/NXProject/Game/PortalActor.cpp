@@ -40,6 +40,9 @@ void APortalActor::BeginPlay()
     {
         PortalEffect->Deactivate(); // 시작 시 이펙트 비활성화
     }
+
+  
+
 }
 
 
@@ -57,8 +60,16 @@ void APortalActor::ActivateEffect()
         PortalEffect->Activate(); // 이펙트 활성화
         bIsPortalActive = true; // 포탈 활성화 상태로 변경
     }
+    // 사운드 재생
+    if (PickupSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(
+            GetWorld(),
+            PickupSound,
+            GetActorLocation()
+        );
+    }
 }
-
 // 포탈 활성화 상태를 설정하는 함수
 void APortalActor::SetPortalActive(bool bActive)
 {
@@ -101,4 +112,6 @@ void APortalActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
             Character->SetActorLocation(DestinationLocation); // 포탈 이동
         }
     }
+
+    
 }
