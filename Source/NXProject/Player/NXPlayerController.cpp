@@ -32,17 +32,19 @@ void ANXPlayerController::BeginPlay()
 			}
 		}
 	}
-
-	FString CurrentMapName = GetWorld()->GetMapName();
-
-		if (HUDWidgetClass)
+	if (HUDWidgetClass)
+	{
+		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidgetInstance)
 		{
-			HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-			if (HUDWidgetInstance)
-			{
-				HUDWidgetInstance->AddToViewport();
-			}
+			HUDWidgetInstance->AddToViewport();
 		}
+		CrosshairUI = CreateWidget<UUserWidget>(this, CrossHairClass);
+		if (CrosshairUI)
+		{
+			CrosshairUI->AddToViewport();
+		}
+	}
 }
 
 UUserWidget* ANXPlayerController::GetHUDWidget() const

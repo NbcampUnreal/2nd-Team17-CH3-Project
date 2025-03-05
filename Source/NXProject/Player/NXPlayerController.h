@@ -39,10 +39,16 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
 	UUserWidget* HUDWidgetInstance;
-UFUNCTION(BlueprintPure, Category = "HUD")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> CrossHairClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CrossHair")
+	UUserWidget* CrosshairUI;
+
+	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
-	
+
 
 	virtual void BeginPlay() override;
-	
+
 };
