@@ -20,6 +20,7 @@ public:
 
 	void FireShotgun();
 	void Reloading();
+	void Reload();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USkeletalMeshComponent* MeshComp;
 

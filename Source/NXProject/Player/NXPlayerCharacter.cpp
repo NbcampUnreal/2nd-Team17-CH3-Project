@@ -16,7 +16,6 @@
 #include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
 #include "Components/WidgetComponent.h"//cnrk
-#include "Components/ProgressBar.h"//추가
 #include "Engine/OverlapResult.h"
 #include "Weapon/NXShotgun.h"
 ANXPlayerCharacter::ANXPlayerCharacter()
@@ -190,6 +189,13 @@ void ANXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void ANXPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!WeaponClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ANXPlayerCharacter: WeaponClass is nullptr! Make sure it's set in Blueprint."));
+		return;
+	}
+
 	if (WeaponClass)
 	{
 		WeaponInstance = GetWorld()->SpawnActor<ANXWeaponActor>(WeaponClass);
@@ -202,9 +208,6 @@ void ANXPlayerCharacter::BeginPlay()
 	}
 	WeaponInstance->SetOwner(this);
 
-	// 위젯 초기화
-	OverheadWidget->InitWidget();
-	UpdateOverheadHP();
 }
 
 void ANXPlayerCharacter::Tick(float DeltaTime)
@@ -430,6 +433,11 @@ void ANXPlayerCharacter::EnableRagdoll()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
+int32 ANXPlayerCharacter::GetHealth()
+{
+	return Health;
+}
+
 //숩
 
 float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -444,7 +452,6 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	}
 
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	UpdateOverheadHP();//g추가
 
 	if (Health <= 0.0f)
 	{
@@ -459,6 +466,11 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 void ANXPlayerCharacter::ResetHit()
 {
 	bIsHitted = false;
+}
+
+TObjectPtr<ANXWeaponActor> ANXPlayerCharacter::GetWeaponInstance()
+{
+	return WeaponInstance;
 }
 
 
@@ -556,28 +568,5 @@ void ANXPlayerCharacter::Reload()
 void ANXPlayerCharacter::EndReload()
 {
 	bIsReloading = false;
-}
-
-void ANXPlayerCharacter::UpdateOverheadHP()
-{
-	// OverheadWidget이 null인지 체크
-	if (!OverheadWidget)
-	{
-		return;
-	}
-
-	// OverheadWidget에서 실제 위젯 객체를 가져옵니다.
-	UUserWidget* WidgetInstance = OverheadWidget->GetUserWidgetObject(); // UWidgetComponent에서 호출
-	if (WidgetInstance)
-	{
-		// 이름이 "OverHeadHP"인 ProgressBar를 찾습니다.
-		if (UProgressBar* HPBar = Cast<UProgressBar>(WidgetInstance->GetWidgetFromName(TEXT("OverHeadHP"))))
-		{
-			// 체력 비율을 계산합니다.
-			const float HPPercent = (MaxHealth > 0.f) ? Health / MaxHealth : 0.f;
-			// 체력 바의 퍼센트를 설정합니다.
-			HPBar->SetPercent(HPPercent);
-		}
-	}
 }
 

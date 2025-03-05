@@ -2,16 +2,15 @@
 #include "Kismet/GameplayStatics.h"
 
 ANXShotgun::ANXShotgun()
+	:PelletCount(10),
+	MaxBullet(8),
+	Bullet(MaxBullet),
+	MaxRange(1200.0f),
+	MinDamage(1.0f),
+	MaxDamage(10.0f),
+	SpreadAngle(5.0f)
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	PelletCount = 10;
-	MaxBullet = 8;
-	Bullet = MaxBullet;
-	MaxRange = 1200.0f;
-	MinDamage = 1.0f;
-	MaxDamage = 10.0f;
-	SpreadAngle = 5.0f;
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	MeshComp->SetupAttachment(SceneComp);
@@ -37,7 +36,7 @@ void ANXShotgun::FireShotgun()
 	FVector ShotDirection = CameraRotation.Vector();
 
 	Bullet -= 1;
-	
+
 	if (MuzzleFlash)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
@@ -47,7 +46,7 @@ void ANXShotgun::FireShotgun()
 			CameraRotation
 		);
 	}
-	
+
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, MuzzleLocation);
@@ -69,6 +68,18 @@ void ANXShotgun::FireShotgun()
 }
 
 void ANXShotgun::Reloading()
+{
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(
+		TimerHandle,
+		this,
+		&ANXShotgun::Reload,
+		3.0f,
+		false
+	);
+}
+
+void ANXShotgun::Reload()
 {
 	Bullet = MaxBullet;
 }

@@ -1,6 +1,6 @@
 #include "Player/NXPlayerController.h"
 #include "EnhancedInputSubsystems.h"
-#include "Blueprint/UserWidget.h" // 헤더 추가
+#include "Blueprint/UserWidget.h"
 #include "Game/NXGameState.h"
 
 ANXPlayerController::ANXPlayerController()
@@ -32,20 +32,17 @@ void ANXPlayerController::BeginPlay()
 			}
 		}
 	}
-	if (HUDWidgetClass)
-	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidgetInstance)
-		{
-			HUDWidgetInstance->AddToViewport();
-		}
-	}
 
-	ANXGameState* NXGameState = GetWorld() ? GetWorld()->GetGameState<ANXGameState>() : nullptr;
-	if (NXGameState)
-	{
-		NXGameState->UpdateHUD();
-	}
+	FString CurrentMapName = GetWorld()->GetMapName();
+
+		if (HUDWidgetClass)
+		{
+			HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+			if (HUDWidgetInstance)
+			{
+				HUDWidgetInstance->AddToViewport();
+			}
+		}
 }
 
 UUserWidget* ANXPlayerController::GetHUDWidget() const

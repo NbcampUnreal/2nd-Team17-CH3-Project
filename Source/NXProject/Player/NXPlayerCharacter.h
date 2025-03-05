@@ -74,6 +74,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void OnDeath();
 	void EnableRagdoll();
+	int32 GetHealth();
 
 	float TakeDamage(float DamageAmount,
 		struct FDamageEvent const& DamageEvent,
@@ -81,6 +82,8 @@ public:
 		AActor* DamageCauser
 	);
 	void ResetHit();
+
+	TObjectPtr<ANXWeaponActor> GetWeaponInstance();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -182,9 +185,6 @@ protected:
 	void ApplyCrouch();
 
 	void ApplyUnCrouch();
-
-	// 오버헤드 HP 업데이트 함수
-	void UpdateOverheadHP();
 
 	//이인화 : NPC 피격 및 사망 확인을 위한 코드 삭제해도 괜찮습니다-------------------
 	/*UFUNCTION()

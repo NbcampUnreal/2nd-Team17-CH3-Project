@@ -28,7 +28,7 @@ public:
     // PortalActor를 초기화하는 함수
     void InitializePortalActor(APortalActor* Portal);
     
-
+    FTimerHandle HUDUpdateTimerHandle;
     //허드
     void UpdateHUD();
 
