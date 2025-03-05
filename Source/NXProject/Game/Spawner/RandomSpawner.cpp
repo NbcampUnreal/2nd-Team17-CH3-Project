@@ -64,10 +64,7 @@ void ARandomSpawner::SpawnRandomActor()
                             FRotator::ZeroRotator
                         );
 
-                            *ActorData.ActorClass->GetName(),
-                            *SpawnLocation.ToString());
-
-                        return; // 선택된 액터가 스폰되면 종료
+                        return;
                     }
                 }
             }
