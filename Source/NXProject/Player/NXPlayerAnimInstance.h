@@ -13,5 +13,9 @@ UCLASS()
 class NXPROJECT_API UNXPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+protected:
+	UFUNCTION()
+	void AnimNotify_AN_FootPlant_Left();
+	UFUNCTION()
+	void AnimNotify_AN_FootPlant_Right();
 };

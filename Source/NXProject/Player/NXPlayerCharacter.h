@@ -41,6 +41,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundBase* DashSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* StepSound;
 	
 	// NXPlayerCharacter.h
 	UFUNCTION(BlueprintPure, Category = "Health")
