@@ -31,6 +31,7 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 
 }
 
+
 void ANXNonPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -94,6 +95,26 @@ float ANXNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	if (ActualDamage > 0.f)
 	{
 		Health = FMath::Clamp(Health - ActualDamage, 0.0f, MaxHealth);
+		
+		if (bIsPlayedEffect == false)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				HittedEffect,
+				GetActorLocation(),
+				GetActorRotation()
+			);
+			bIsPlayedEffect = true;
+			FTimerHandle TimerHandle;
+			GetWorldTimerManager().SetTimer(
+				TimerHandle,
+				this,
+				&ANXNonPlayerCharacter::EndPlayedEffect,
+				0.2,
+				false
+			);
+		}
+
 		if (GetMesh() && GetMesh()->GetAnimInstance())
 		{
 			//피격 애니메이션 실행
@@ -145,4 +166,8 @@ void ANXNonPlayerCharacter::EnableRagdoll()
 {
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+}
+void ANXNonPlayerCharacter::EndPlayedEffect()
+{
+	bIsPlayedEffect = false;
 }

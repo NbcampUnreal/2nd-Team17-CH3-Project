@@ -36,6 +36,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reloading")
+	bool bIsReloading;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* DashSound;
 	
 	// NXPlayerCharacter.h
 	UFUNCTION(BlueprintPure, Category = "Health")
@@ -189,7 +194,6 @@ private:
 	bool bIsHitted;
 	bool bIsDashing;
 	bool bIsFire;
-	bool bIsReloading;
 
 	// À§Á¬ ÄÄÆ÷³ÍÆ®
 	UPROPERTY(VisibleAnywhere, Category = "UI")

@@ -1,6 +1,7 @@
 
 #pragma once
-
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "CoreMinimal.h"
 #include "Player/NXCharacterBase.h"
 #include "GameFramework/Character.h"
@@ -22,6 +23,9 @@ public:
 	UAnimMontage* NPCDeadAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* NPCHittedAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	UNiagaraSystem* HittedEffect;
+
 
 	UFUNCTION(BlueprintPure, Category = "Health")
 	int32 GetHealth() const;
@@ -42,12 +46,16 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	virtual void OnDeath();
 	void EnableRagdoll();
+	
+	bool bIsPlayedEffect;
+	void EndPlayedEffect();
+
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime)override;
 private:
 	bool bIsDead;
-
 	// À§Á¬ ÄÄÆ÷³ÍÆ®
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	UWidgetComponent* OverheadWidget;
+
 };

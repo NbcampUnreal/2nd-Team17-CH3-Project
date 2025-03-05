@@ -127,6 +127,7 @@ void ANXBossZombie::OnDashHit()
 
 void ANXBossZombie::OnDeath()
 {
+	Super::OnDeath();
 	// 보스가 죽었을 때 호출되는 함수
 	if (WinScreenClass)
 	{

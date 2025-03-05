@@ -1,5 +1,6 @@
 #pragma once
-
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "CoreMinimal.h"
 #include "Item/NXBaseItem.h"
 #include "NXHealItem.generated.h"
@@ -22,4 +23,7 @@ public:
     void SetHealAmount(float NewHealAmount) { HealAmount = NewHealAmount; } 
 
     virtual void ActivateItem(AActor* Activator) override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+    UNiagaraSystem* HealingEffect;
 };

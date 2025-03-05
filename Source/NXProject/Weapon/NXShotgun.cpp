@@ -6,7 +6,7 @@ ANXShotgun::ANXShotgun()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PelletCount = 10;
-	MaxBullet = 5;
+	MaxBullet = 8;
 	Bullet = MaxBullet;
 	MaxRange = 1200.0f;
 	MinDamage = 1.0f;
@@ -37,6 +37,22 @@ void ANXShotgun::FireShotgun()
 	FVector ShotDirection = CameraRotation.Vector();
 
 	Bullet -= 1;
+	
+	if (MuzzleFlash)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			MuzzleFlash,
+			MuzzleLocation,
+			CameraRotation
+		);
+	}
+	
+	if (FireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, MuzzleLocation);
+	}
+
 	for (int32 i = 0;i < PelletCount;i++)
 	{
 		float SpreadX = FMath::RandRange(-SpreadAngle, SpreadAngle);

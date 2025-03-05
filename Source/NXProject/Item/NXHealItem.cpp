@@ -19,6 +19,13 @@ void ANXHealItem::ActivateItem(AActor* Activator)
 			PlayerCharacter->AddHealth(HealAmount);
 		}
 
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			HealingEffect,
+			GetActorLocation(),
+			GetActorRotation()
+		);
+
 		DestroyItem();
 	}
 }

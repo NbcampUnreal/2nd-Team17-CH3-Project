@@ -1,9 +1,14 @@
 
 #pragma once
 
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "CoreMinimal.h"
 #include "NXProject/NXWeaponActor.h"
 #include "NXShotgun.generated.h"
+
+
+class UNiagaraSystem;
 
 UCLASS()
 class NXPROJECT_API ANXShotgun : public ANXWeaponActor
@@ -17,6 +22,12 @@ public:
 	void Reloading();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USkeletalMeshComponent* MeshComp;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Effect")
+	UNiagaraSystem* MuzzleFlash;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* FireSound;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shotgun")
 	int32 Bullet;

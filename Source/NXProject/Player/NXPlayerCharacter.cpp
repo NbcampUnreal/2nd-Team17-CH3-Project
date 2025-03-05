@@ -11,6 +11,7 @@
 #include "AI/NXNonPlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
@@ -495,6 +496,11 @@ void ANXPlayerCharacter::Dash()
 	if (PlayerDashAnimation && GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(PlayerDashAnimation, 1.f);
+	}
+
+	if (DashSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DashSound, GetActorLocation());
 	}
 
 	DashVelocity.Z = DashHeight;
