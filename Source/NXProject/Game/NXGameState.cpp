@@ -18,7 +18,7 @@ void ANXGameState::BeginPlay()
 {
     Super::BeginPlay();
 
-    UpdateHUD();
+  
 }
 
 int32 ANXGameState::GetScore() const
@@ -44,6 +44,8 @@ void ANXGameState::AddScore(int32 Amount)
             NXGameInstance->AddToScore(Amount);
         }
     }
+
+    UpdateHUD();//스코어 변경 시 업데이트
 }
 
 void ANXGameState::ActivatePortalEffect()
@@ -59,7 +61,7 @@ void ANXGameState::InitializePortalActor(APortalActor* Portal)
 {
     PortalActor = Portal;
 }
-
+/**
 void ANXGameState::UpdateHUD()
 {
     // 플레이어 컨트롤러가 유효한지 확인
@@ -82,6 +84,41 @@ void ANXGameState::UpdateHUD()
                     }
                 }
             }
+        }
+    }
+}*/
+void ANXGameState::UpdateHUD()
+{
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        if (ANXPlayerController* NXPlayerController = Cast<ANXPlayerController>(PlayerController))
+        {
+            if (UUserWidget* HUDWidget = NXPlayerController->GetHUDWidget())
+            {
+                if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Score"))))
+                {
+                    if (UNXGameInstance* NXGameInstance = Cast<UNXGameInstance>(GetGameInstance()))
+                    {
+                        int32 CurrentScore = NXGameInstance->TotalScore;
+                        ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), CurrentScore)));
+
+                        // 디버깅 로그 추가
+                        UE_LOG(LogTemp, Warning, TEXT("UpdateHUD: Score Updated to %d"), CurrentScore);
+                    }
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Error, TEXT("UpdateHUD: ScoreText not found!"));
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("UpdateHUD: HUDWidget is nullptr!"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("UpdateHUD: PlayerController is not ANXPlayerController!"));
         }
     }
 }
