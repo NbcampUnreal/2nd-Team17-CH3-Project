@@ -13,7 +13,7 @@
 ANXGameState::ANXGameState()
 {
 	Score = 0;
-	RequiredScoreToActivatePortal = 2; // 2킬 시 포탈 작동
+	RequiredScoreToActivatePortal = 1; // 2킬 시 포탈 작동
 	PortalActor = nullptr; // 초기화
 }
 
