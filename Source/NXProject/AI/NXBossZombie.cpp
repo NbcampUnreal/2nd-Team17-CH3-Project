@@ -134,7 +134,7 @@ void ANXBossZombie::OnDeath()
 {
 	Super::OnDeath();
 	// 보스가 죽었을 때 호출되는 함수
-	if (WinScreenClass)
+ 	if (WinScreenClass)
 	{
 		// WinScreen UI 생성
 		UUserWidget* WinScreen = CreateWidget<UUserWidget>(GetWorld(), WinScreenClass);

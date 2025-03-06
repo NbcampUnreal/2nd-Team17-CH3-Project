@@ -106,7 +106,7 @@ void APortalActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
     {
         // GameState 가져오기
         ANXGameState* GameState = Cast<ANXGameState>(GetWorld()->GetGameState());
-        if (GameState && bIsPortalActive && GameState->GetScore() >= 2)
+        if (GameState && bIsPortalActive && GameState->GetScore() >= 10)
         {
             // 캐릭터를 지정된 목적지 위치로 이동
             Character->SetActorLocation(DestinationLocation); // 포탈 이동
