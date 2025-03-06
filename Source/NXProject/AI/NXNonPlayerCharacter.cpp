@@ -30,6 +30,7 @@ ANXNonPlayerCharacter::ANXNonPlayerCharacter()
 	OverheadWidget->SetupAttachment(GetMesh());
 	OverheadWidget->SetWidgetSpace(EWidgetSpace::World);
 
+	OverheadWidget->SetVisibility(false);
 }
 
 
@@ -60,6 +61,11 @@ void ANXNonPlayerCharacter::Tick(float DeltaTime)
 
 		}
 	}
+}
+
+void ANXNonPlayerCharacter::HideHPBar()
+{
+	OverheadWidget->SetVisibility(false);
 }
 
 int32 ANXNonPlayerCharacter::GetHealth() const
@@ -95,6 +101,18 @@ float ANXNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& 
 	
 	if (ActualDamage > 0.f)
 	{
+		if (OverheadWidget)
+		{
+			OverheadWidget->SetVisibility(true);
+		}
+
+		GetWorld()->GetTimerManager().SetTimer(
+			HideHPBarTimer,
+			this,
+			&ANXNonPlayerCharacter::HideHPBar,
+			3.0f,
+			false
+		);
 		Health = FMath::Clamp(Health - ActualDamage, 0.0f, MaxHealth);
 		
 		if (bIsPlayedEffect == false)

@@ -26,7 +26,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
 	UNiagaraSystem* HittedEffect;
 
-
 	UFUNCTION(BlueprintPure, Category = "Health")
 	int32 GetHealth() const;
 
@@ -47,11 +46,15 @@ protected:
 	virtual void OnDeath();
 	void EnableRagdoll();
 	
+	FTimerHandle HideHPBarTimer;
+
 	bool bIsPlayedEffect;
 	void EndPlayedEffect();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime)override;
+
+	void HideHPBar();
 private:
 	bool bIsDead;
 	// À§Á¬ ÄÄÆ÷³ÍÆ®
