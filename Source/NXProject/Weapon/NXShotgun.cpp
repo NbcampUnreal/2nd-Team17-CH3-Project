@@ -4,7 +4,7 @@
 ANXShotgun::ANXShotgun()
 	:PelletCount(10),
 	MaxBullet(8),
-	Bullet(MaxBullet),
+	Bullet(8),
 	MaxRange(1200.0f),
 	MinDamage(1.0f),
 	MaxDamage(10.0f),

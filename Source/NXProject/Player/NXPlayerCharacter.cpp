@@ -22,6 +22,13 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		PC->SetIgnoreMoveInput(false);
+		PC->SetIgnoreLookInput(false);
+	}
+
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->TargetArmLength = 300.0f;
@@ -459,7 +466,7 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	}
 	bIsHitted = true;
 
-	GetWorldTimerManager().SetTimer(HitResetTimerHandle, this, &ANXPlayerCharacter::ResetHit, 0.5f, false);
+	GetWorldTimerManager().SetTimer(HitResetTimerHandle, this, &ANXPlayerCharacter::ResetHit, 0.3f, false);
 
 	return ActualDamage;
 }

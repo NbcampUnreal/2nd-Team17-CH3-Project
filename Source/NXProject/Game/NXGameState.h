@@ -32,9 +32,9 @@ public:
     //허드
     void UpdateHUD();
 
+    int32 RequiredScoreToActivatePortal; // 포탈 활성화에 필요한 점수
 private:
     int32 Score; // 현재 점수
-    int32 RequiredScoreToActivatePortal; // 포탈 활성화에 필요한 점수
 
     UPROPERTY()
     APortalActor* PortalActor; // 포탈 액터 참조

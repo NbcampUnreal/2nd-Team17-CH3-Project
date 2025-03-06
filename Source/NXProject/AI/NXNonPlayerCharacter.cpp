@@ -164,6 +164,7 @@ void ANXNonPlayerCharacter::OnDeath()
 	{
 		if (ANXGameState* GameState = World->GetGameState<ANXGameState>())
 		{
+			if(GameState->GetScore()<GameState->RequiredScoreToActivatePortal)
 			GameState->AddScore(1);
 		}
 	}
