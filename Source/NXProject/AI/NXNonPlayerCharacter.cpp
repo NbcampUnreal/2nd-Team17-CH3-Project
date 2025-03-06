@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "Components/ProgressBar.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/Engine.h"
 #include "Game/NXGameState.h"
 #include "Game/NXGameInstance.h"
@@ -145,6 +146,13 @@ void ANXNonPlayerCharacter::OnDeath()
 			AIController->EndAI();
 	}
 	GetCharacterMovement()->StopMovementImmediately();
+
+	if (UCapsuleComponent* CapsuleComp = GetCapsuleComponent())
+	{
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+
 	if (GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(NPCDeadAnimation,1.f);
