@@ -48,13 +48,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
 
-	UFUNCTION(BlueprintCallable)
-	void ShowMainMenu(bool bIsRestart);
-	UPROPERTY()
-	UUserWidget* MainMenuWidgetInstance;
-
-
-
 	virtual void BeginPlay() override;
 
 };

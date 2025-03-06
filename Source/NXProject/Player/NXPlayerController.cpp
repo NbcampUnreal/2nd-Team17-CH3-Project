@@ -52,14 +52,14 @@ UUserWidget* ANXPlayerController::GetHUDWidget() const
 	return HUDWidgetInstance;
 }
 
-void ANXPlayerController::ShowMainMenu(bool bIsRestart)
-{
-	if (bIsRestart)
-	{
-		UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
-		if (PlayAnimFunc)
-		{
-			MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
-		}
-	}
-}
+//void ANXPlayerController::ShowMainMenu(bool bIsRestart)
+//{
+//	if (bIsRestart)
+//	{
+//		UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
+//		if (PlayAnimFunc)
+//		{
+//			MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
+//		}
+//	}
+//}
