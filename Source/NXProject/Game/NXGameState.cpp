@@ -100,6 +100,12 @@ void ANXGameState::UpdateHUD()
 						HPBar->SetFillColorAndOpacity(FLinearColor::Red);
 					}
 				}
+				if (UProgressBar* SteminaBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("PlayerSteminaBar"))))
+				{
+					ANXPlayerCharacter* PlayerCharacter = Cast<ANXPlayerCharacter>(PlayerController->GetPawn());
+					const float SteminaPercent = PlayerCharacter->GetStemina() / PlayerCharacter->MaxStemina;
+					SteminaBar->SetPercent(SteminaPercent);
+				}
 			}
 		}
 	}

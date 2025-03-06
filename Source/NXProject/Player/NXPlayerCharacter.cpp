@@ -62,6 +62,9 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
 
+	MaxStemina = 100.0f;
+	Stemina = MaxStemina;
+
 	// OverheadWidget ÃÊ±âÈ­
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
@@ -85,6 +88,7 @@ ANXPlayerCharacter::ANXPlayerCharacter()
 	bIsAttacking = false;
 	bIsDashing = false;
 	bIsFire = false;
+	bIsRest = true;
 
 }
 
@@ -220,7 +224,6 @@ void ANXPlayerCharacter::BeginPlay()
 	}
 	WeaponInstance->SetOwner(this);
 
-	
 }
 
 void ANXPlayerCharacter::Tick(float DeltaTime)
@@ -387,19 +390,20 @@ void ANXPlayerCharacter::ResetFire()
 {
 	bIsFire = false;
 }
-
-
 //¼ü
 float ANXPlayerCharacter::GetHealth() const
 {
 	return Health;
 }
 
+float ANXPlayerCharacter::GetStemina()
+{
+	return Stemina;
+}
+
 void ANXPlayerCharacter::AddHealth(float Amount)
 {
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
-
-
 }
 
 void ANXPlayerCharacter::OnDeath()
@@ -494,10 +498,14 @@ TObjectPtr<ANXWeaponActor> ANXPlayerCharacter::GetWeaponInstance()
 
 void ANXPlayerCharacter::Dash()
 {
+	if (Stemina < 30)return;
 	if (bIsDashing) return;
+	Stemina = FMath::Max(0, Stemina - 25);
 
 	FVector InputDirection = GetLastMovementInputVector();
 	InputDirection = InputDirection.GetSafeNormal();
+
+	if (InputDirection.IsNearlyZero())return;
 
 	UAnimMontage* PlayerDashAnimation = nullptr;
 	FVector DashVelocity = FVector::ZeroVector;
@@ -540,6 +548,35 @@ void ANXPlayerCharacter::Dash()
 
 	bIsDashing = true;
 	GetWorldTimerManager().SetTimer(DashCooldownTimerHandle, this, &ANXPlayerCharacter::ResetDash, 1.0f, false);
+
+	bIsRest = false;
+	GetWorldTimerManager().SetTimer(RestTimerHandle, this, &ANXPlayerCharacter::ResetRest, 3.0f, false);
+}
+
+void ANXPlayerCharacter::ResetRest()
+{
+	bIsRest = true;
+	GetWorldTimerManager().SetTimer(
+		SteminaRegenTimer,
+		this,
+		&ANXPlayerCharacter::RecoveryStemina,
+		0.1f,
+		true
+	);
+}
+
+void ANXPlayerCharacter::RecoveryStemina()
+{
+	if (!bIsRest)
+	{
+		{
+			GetWorldTimerManager().ClearTimer(SteminaRegenTimer);
+			return;
+		}
+	}
+
+	Stemina = FMath::Min(MaxStemina, Stemina + 1.5);
+
 }
 
 void ANXPlayerCharacter::ResetDash()
@@ -551,6 +588,7 @@ void ANXPlayerCharacter::EndDodge()
 {
 	bIsHitted = false;
 }
+
 
 void ANXPlayerCharacter::Reload()
 {

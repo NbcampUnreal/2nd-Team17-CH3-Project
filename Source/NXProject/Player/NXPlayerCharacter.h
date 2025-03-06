@@ -37,6 +37,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stemina")
+	float Stemina;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stemina")
+	float MaxStemina;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reloading")
 	bool bIsReloading;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attacking")
@@ -53,7 +58,7 @@ public:
 	// NXPlayerCharacter.h
 	UFUNCTION(BlueprintPure, Category = "Health")
 	virtual float GetHealth() const; // override 키워드 추가
-
+	float GetStemina();
 	virtual void AddHealth(float Amount) override; // UFUNCTION() 제거하고 override 추가
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
@@ -150,6 +155,8 @@ protected:
 	FTimerHandle DashDodgeTimerHandle;
 	FTimerHandle FireCoolTimerHandle;
 	FTimerHandle ReloadTimerHandle;
+	FTimerHandle RestTimerHandle;
+	FTimerHandle SteminaRegenTimer;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -173,6 +180,10 @@ protected:
 	void StopAttack(const FInputActionValue& Value);*/
 	UFUNCTION()
 	void ResetFire();
+	UFUNCTION()
+	void ResetRest();
+
+	void RecoveryStemina();
 	UFUNCTION()
 	void Reload();
 	UFUNCTION()
@@ -201,6 +212,7 @@ private:
 	bool bIsHitted;
 	bool bIsDashing;
 	bool bIsFire;
+	bool bIsRest;
 
 	// 위젯 컴포넌트
 	UPROPERTY(VisibleAnywhere, Category = "UI")
