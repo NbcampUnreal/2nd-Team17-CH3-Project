@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class ANXWeaponActor;
 class UWidgetComponent;
+class UInputMappingContext;
 
 struct FInputActionValue;
 

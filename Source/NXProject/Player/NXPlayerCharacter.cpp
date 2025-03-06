@@ -18,6 +18,11 @@
 #include "Components/WidgetComponent.h"//cnrk
 #include "Engine/OverlapResult.h"
 #include "Weapon/NXShotgun.h"
+
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+
 ANXPlayerCharacter::ANXPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -215,6 +220,7 @@ void ANXPlayerCharacter::BeginPlay()
 	}
 	WeaponInstance->SetOwner(this);
 
+	
 }
 
 void ANXPlayerCharacter::Tick(float DeltaTime)
