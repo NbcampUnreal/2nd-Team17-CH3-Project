@@ -27,6 +27,11 @@ void ANXBossZombie::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 	if (!bIsJumpAttacking)return;
 
+	if (LandSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, LandSound, GetActorLocation());
+	}
+
 	FVector AttackLocation = GetActorLocation();
 
 	TArray<FOverlapResult> OverlapResults;

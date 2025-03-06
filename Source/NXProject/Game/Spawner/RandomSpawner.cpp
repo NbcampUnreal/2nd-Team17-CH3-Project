@@ -64,11 +64,7 @@ void ARandomSpawner::SpawnRandomActor()
                             FRotator::ZeroRotator
                         );
 
-                        UE_LOG(LogTemp, Warning, TEXT("Spawned Actor: %s at Location: %s"),
-                            *ActorData.ActorClass->GetName(),
-                            *SpawnLocation.ToString());
-
-                        return; // 선택된 액터가 스폰되면 종료
+                        return;
                     }
                 }
             }
