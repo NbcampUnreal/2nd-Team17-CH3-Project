@@ -38,12 +38,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reloading")
 	bool bIsReloading;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attacking")
+	bool bIsAttacking;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundBase* DashSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundBase* StepSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* HittedSound;
 	
 	// NXPlayerCharacter.h
 	UFUNCTION(BlueprintPure, Category = "Health")
@@ -125,7 +129,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool GetIsCrouching() const;
 	bool bIsCrouching;
-	bool bIsAttacking;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	//float MaxHealth;

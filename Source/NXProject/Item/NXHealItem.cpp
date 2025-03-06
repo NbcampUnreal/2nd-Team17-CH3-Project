@@ -1,6 +1,7 @@
 #include "NXHealItem.h"
 #include "Player/NXPlayerCharacter.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ANXHealItem::ANXHealItem()
 {
@@ -25,6 +26,11 @@ void ANXHealItem::ActivateItem(AActor* Activator)
 			GetActorLocation(),
 			GetActorRotation()
 		);
+
+		if (HealSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, HealSound, GetActorLocation());
+		}
 
 		DestroyItem();
 	}

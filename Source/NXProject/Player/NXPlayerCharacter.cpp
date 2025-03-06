@@ -453,6 +453,11 @@ float ANXPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	if (HittedSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HittedSound, GetActorLocation());
+	}
+
 	if (GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(PlayerHittedAnimation, 1.f);

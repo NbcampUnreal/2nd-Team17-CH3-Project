@@ -26,4 +26,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
     UNiagaraSystem* HealingEffect;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    USoundBase* HealSound;
 };
